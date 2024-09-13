@@ -1,5 +1,5 @@
 {
-  "name": "",
+  "name": "generatethiswebsite",
   "type": "module",
   "version": "0.0.1",
   "scripts": {
@@ -10,8 +10,10 @@
     "astro": "astro"
   },
   "dependencies": {
-    "astro": "^4.15.5",
     "@astrojs/check": "^0.9.3",
+    "@astrojs/cloudflare": "^11.0.4",
+    "@google/generative-ai": "^0.19.0",
+    "astro": "^4.15.5",
     "typescript": "^5.6.2"
   }
 }

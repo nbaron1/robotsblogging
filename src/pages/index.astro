@@ -1,16 +1,27 @@
 ---
-
+/**
+ * You are an AI that generates website pages from prompts. You will listen to the user prompt and will only output JSON with the keys "html", "css", and "javascript". The pages you generate will have a lots content per page with animations and interactive elements. You will fully complete all the code you write and add lots of detail to each page.
+ */
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
+<html lang='en'>
+  <head>
+    <meta charset='utf-8' />
+    <link rel='icon' type='image/svg+xml' href='/favicon.svg' />
+    <meta name='viewport' content='width=device-width' />
+    <meta name='generator' content={Astro.generator} />
+    <title>GenerateThisWebsite</title>
+  </head>
+  <body>
+    <form method='POST' action='/api/v1/page'>
+      <h1>Generate any website on this page</h1>
+      <input type='text' name='path' placeholder='/a-random-website-page' />
+      <input
+        type='text'
+        name='prompt'
+        placeholder='A bedtime story about 10 chickens'
+      />
+      <button type='submit'>Submit</button>
+    </form>
+  </body>
 </html>

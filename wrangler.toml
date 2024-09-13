@@ -1,0 +1,13 @@
+name = "generatethiswebsite"
+main = "dist/_worker.js/index.js"
+compatibility_flags = [ "nodejs_compat" ]
+compatibility_date = "2024-03-29"
+
+[site]
+bucket = './dist'
+
+[[d1_databases]]
+binding = "DB"
+database_name = "generatethiswebsite"
+database_id = "021a0340-a455-4c3f-8b63-d092381c7150"
+preview_database_id = "DB"
