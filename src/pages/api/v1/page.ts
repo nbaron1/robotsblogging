@@ -24,21 +24,21 @@ class GoogleAIModel {
       topK: 64,
       maxOutputTokens: 8192,
       responseMimeType: 'application/json',
-      //   responseSchema: {
-      //     type: 'object',
-      //     properties: {
-      //       html: {
-      //         type: 'string',
-      //       },
-      //       css: {
-      //         type: 'string',
-      //       },
-      //       javascript: {
-      //         type: 'string',
-      //       },
-      //     },
-      //     required: ['html', 'css', 'javascript'],
-      //   },
+      responseSchema: {
+        type: 'object',
+        properties: {
+          html: {
+            type: 'string',
+          },
+          css: {
+            type: 'string',
+          },
+          javascript: {
+            type: 'string',
+          },
+        },
+        required: ['html', 'css', 'javascript'],
+      },
     };
 
     const chatSession = model.startChat({
@@ -61,8 +61,19 @@ class GoogleAIModel {
     }
 
     const data = JSON.parse(content);
+    // console.log({
+    //   //   content,
+    //   //   data,
+    //   html: data.html,
+    //   css: !!data.css,
+    //   javascript: !!data.javascript,
+    // });
 
-    if (!data.html || !data.css || !data.javascript) {
+    if (
+      typeof data.html !== 'string' ||
+      typeof data.css !== 'string' ||
+      typeof data.javascript !== 'string'
+    ) {
       throw new Error('Missing html, css, or javascript');
     }
 
@@ -110,10 +121,10 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
     await statement.run();
 
-    return new Response(JSON.stringify(reponse), {
-      status: 200,
+    return new Response(null, {
+      status: 302,
       headers: {
-        'Content-Type': 'application/json',
+        Location: `/${path}`,
       },
     });
   } catch (error) {

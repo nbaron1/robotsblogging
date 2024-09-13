@@ -7,7 +7,18 @@ console.log({ path });
 // or else send to not-found page??
 
 const db = Astro.locals.runtime.env.DB;
-console.log({ db });
+
+// Only replace the first slash on purpose
+const pathWithoutSlash = path.replace('/', '');
+console.log({ pathWithoutSlash });
+const result = await db
+  .prepare('SELECT * FROM page WHERE path = ?')
+  .bind(pathWithoutSlash)
+  .first();
+
+if (!result) {
+  return new Response('Page not found', { status: 404 });
+}
 ---
 
 <html lang='en'>
@@ -17,8 +28,9 @@ console.log({ db });
     <meta name='viewport' content='width=device-width' />
     <meta name='generator' content={Astro.generator} />
     <title>GenerateThisWebsite</title>
+    <style set:text={result.css}></style>
   </head>
-  <body>
-    <p>Finding page...</p>
+  <body set:html={result.html}>
+    <script set:text={result.javascript} />
   </body>
 </html>
