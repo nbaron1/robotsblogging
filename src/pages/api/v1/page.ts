@@ -4,18 +4,14 @@ import type { APIRoute } from 'astro';
 class GoogleAIModel {
   constructor(private readonly model: string) {}
 
-  async prompt(prompt: string): Promise<{
-    html: string;
-    css: string;
-    javascript: string;
-  }> {
+  async prompt(prompt: string): Promise<string> {
     const googleApiKey = import.meta.env.GOOGLE_AI_API_KEY;
     const genAI = new GoogleGenerativeAI(googleApiKey);
 
     const model = genAI.getGenerativeModel({
       model: this.model,
       systemInstruction:
-        'You are an AI that generates website pages from prompts. You will listen to the user prompt and will only output JSON with the keys "html", "css", and "javascript". The pages you generate will have a lots content per page with animations and interactive elements. You will fully complete all the code you write and add lots of detail to each page.',
+        'You are an AI that generates markdown code blog post for a topic idea the user submits',
     });
 
     const generationConfig = {
@@ -23,22 +19,7 @@ class GoogleAIModel {
       topP: 0.95,
       topK: 64,
       maxOutputTokens: 8192,
-      responseMimeType: 'application/json',
-      responseSchema: {
-        type: 'object',
-        properties: {
-          html: {
-            type: 'string',
-          },
-          css: {
-            type: 'string',
-          },
-          javascript: {
-            type: 'string',
-          },
-        },
-        required: ['html', 'css', 'javascript'],
-      },
+      responseMimeType: 'text/plain',
     };
 
     const chatSession = model.startChat({
@@ -60,24 +41,7 @@ class GoogleAIModel {
       throw new Error('Missing content');
     }
 
-    const data = JSON.parse(content);
-    // console.log({
-    //   //   content,
-    //   //   data,
-    //   html: data.html,
-    //   css: !!data.css,
-    //   javascript: !!data.javascript,
-    // });
-
-    if (
-      typeof data.html !== 'string' ||
-      typeof data.css !== 'string' ||
-      typeof data.javascript !== 'string'
-    ) {
-      throw new Error('Missing html, css, or javascript');
-    }
-
-    return data as { html: string; css: string; javascript: string };
+    return content;
   }
 }
 
@@ -114,10 +78,8 @@ export const POST: APIRoute = async ({ request, locals }) => {
     const db = locals.runtime.env.DB;
 
     const statement = db
-      .prepare(
-        'INSERT INTO page (path, title, html, css, javascript) VALUES (?1, ?2, ?3, ?4, ?5)'
-      )
-      .bind(path, prompt, reponse.html, reponse.css, reponse.javascript);
+      .prepare('INSERT INTO page (path, title, content) VALUES (?1, ?2, ?3)')
+      .bind(path, prompt, reponse);
 
     await statement.run();
 

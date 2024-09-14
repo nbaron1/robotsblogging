@@ -1,0 +1,57 @@
+---
+import { marked } from 'marked';
+import { Score } from '../components/Score';
+import '../global.css';
+
+const path = Astro.url.pathname;
+
+console.log({ path });
+const db = Astro.locals.runtime.env.DB;
+
+const pathWithoutFirstSlash = path.replace('/', '');
+
+const result = await db
+  .prepare('SELECT * FROM page WHERE path = ?')
+  .bind(pathWithoutFirstSlash)
+  .first();
+
+const content = marked.parse(result.content);
+---
+
+<html lang='en'>
+  <head>
+    <meta charset='utf-8' />
+    <link rel='icon' type='image/svg+xml' href='/favicon.svg' />
+    <meta name='viewport' content='width=device-width' />
+    <meta name='color-scheme' content='dark' />
+    <meta name='generator' content={Astro.generator} />
+    <title>GenerateThisWebsite</title>
+  </head>
+  <body>
+    <article set:html={content} />
+    <Score />
+  </body>
+
+  <style is:inline>
+    body {
+      font-family: 'Inter', ui-sans-serif, system-ui, sans-serif,
+        'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
+        'Noto Color Emoji';
+      background: #1c1917;
+      margin: 48px 32px;
+      /* display: flex; */
+    }
+
+    p {
+      line-height: 2;
+      color: #f5f5f4;
+    }
+
+    h2 {
+      line-height: 150%;
+      margin: 12px 0px;
+      font-weight: 700;
+      font-size: 24px;
+    }
+  </style>
+</html>

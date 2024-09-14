@@ -1,0 +1,17 @@
+.wrapper {
+  background-color: #292524;
+  border-radius: 8px;
+  padding: 8px 12px;
+  width: fit-content;
+  text-align: center;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  border-radius: 16px;
+  border: 1px solid #57534e;
+  margin: 12px 0px;
+}
+
+.score-text {
+  margin: 0;
+}
