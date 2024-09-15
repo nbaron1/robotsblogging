@@ -2,7 +2,6 @@
 import { marked } from 'marked';
 import { Score } from '../components/Score';
 import '../global.css';
-
 import '@fontsource-variable/inter-tight';
 import '@fontsource/inter';
 
@@ -38,6 +37,22 @@ const content = marked.parse(result.content);
     <article set:html={content} />
     <Score />
   </body>
+
+  <script>
+    import { gsap } from 'gsap';
+
+    const items = Array.from(
+      document.querySelectorAll('h1, h2, h3, h4, h5, h6, p, li, pre, code')
+    ).splice(0, 10);
+
+    gsap.from(items, {
+      duration: 0.5,
+      y: -50,
+      opacity: 0,
+      stagger: 0.05,
+      ease: 'power3.out',
+    });
+  </script>
 
   <style is:inline>
     body {
