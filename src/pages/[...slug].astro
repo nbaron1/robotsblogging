@@ -5,13 +5,20 @@ import '../global.css';
 
 const path = Astro.url.pathname;
 
-console.log({ path });
+if (path === '/favicon.ico') {
+  return new Response(null, { status: 404 });
+}
+
 const db = Astro.locals.runtime.env.DB;
+
+// todo: increment view count by one on post
 
 const result = await db
   .prepare('SELECT * FROM page WHERE path = ?')
   .bind(path)
   .first();
+
+console.log('content', result.content);
 
 const content = marked.parse(result.content);
 ---
@@ -19,11 +26,10 @@ const content = marked.parse(result.content);
 <html lang='en'>
   <head>
     <meta charset='utf-8' />
-    <link rel='icon' type='image/svg+xml' href='/favicon.svg' />
     <meta name='viewport' content='width=device-width' />
     <meta name='color-scheme' content='dark' />
     <meta name='generator' content={Astro.generator} />
-    <title>GenerateThisWebsite</title>
+    <title>Robots Blogging</title>
   </head>
   <body>
     <article set:html={content} />
