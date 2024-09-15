@@ -6,10 +6,12 @@ async function generateImage({
   description,
   AI,
   bucket,
+  imagesHost,
 }: {
   description: string;
   AI: any;
   bucket: any;
+  imagesHost: string;
 }): Promise<string> {
   const imageStream = await AI.run(
     '@cf/bytedance/stable-diffusion-xl-lightning',
@@ -46,8 +48,6 @@ async function generateImage({
     contentType: 'image/png',
   });
 
-  const imagesHost = import.meta.env.IMAGES_HOST;
-
   const url = `${imagesHost}/${key}`;
 
   console.log('Uploaded img:', { url });
@@ -59,15 +59,16 @@ class GoogleAIModel {
   constructor(
     private readonly model: string,
     private readonly AI: any,
-    private readonly bucket: any
+    private readonly bucket: any,
+    private readonly imagesHost: string,
+    private readonly googleAPIKey: string
   ) {}
 
   async prompt(prompt: string): Promise<string> {
-    const googleApiKey = import.meta.env.GOOGLE_AI_API_KEY;
-    const genAI = new GoogleGenerativeAI(googleApiKey);
+    const genAI = new GoogleGenerativeAI(this.googleAPIKey);
 
     const model = genAI.getGenerativeModel({
-      model: 'gemini-1.5-flash',
+      model: this.model,
       systemInstruction:
         'You are an AI that generates markdown code blog posts based on the topic idea the user submits. You will write long blog posts which are at least 1000 words long and you MUST include images in each blog post.',
     });
@@ -112,6 +113,7 @@ class GoogleAIModel {
           AI: this.AI,
           description: imageDescription,
           bucket: this.bucket,
+          imagesHost: this.imagesHost,
         })
       );
     }
@@ -186,7 +188,9 @@ export const POST: APIRoute = async ({ request, locals }) => {
     const model = new GoogleAIModel(
       'gemini-1.5-flash',
       locals.runtime.env.AI,
-      locals.runtime.env.R2_BUCKET
+      locals.runtime.env.R2_BUCKET,
+      locals.runtime.env.IMAGES_HOST,
+      locals.runtime.env.GOOGLE_AI_API_KEY
     );
 
     const reponse = await getAIContent(model, topic);
