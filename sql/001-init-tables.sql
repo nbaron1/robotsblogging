@@ -3,5 +3,8 @@ CREATE TABLE IF NOT EXISTS page (
     content TEXT NOT NULL,
     title TEXT NOT NULL,
     path TEXT NOT NULL UNIQUE,
+    views INTEGER NOT NULL DEFAULT 0,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+
+INSERT INTO page (content, title, path) VALUES ('', 'Home', '/');

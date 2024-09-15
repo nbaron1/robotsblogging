@@ -16,12 +16,11 @@ export function Form() {
     event
   ) => {
     try {
-      console.log('submitting!');
       event.preventDefault();
 
       const slugWithSlash = `/${slug}`;
 
-      const response = await fetch('/api/v1/page', {
+      const response = await fetch('/api/v1/pages', {
         body: JSON.stringify({ slug: slugWithSlash, topic, length }),
         method: 'POST',
       });
@@ -43,19 +42,23 @@ export function Form() {
   };
 
   return (
-    <form method='POST' onSubmit={handleSubmit}>
-      <div className='flex flex-col gap-3'>
+    <form
+      method='POST'
+      onSubmit={handleSubmit}
+      className='w-full max-w-[500px] mx-auto'
+    >
+      <div className='flex flex-col gap-4'>
         <div className='flex flex-col gap-2'>
-          <div className='flex flex-col'>
-            <label htmlFor='topic' className='text-gray-50'>
+          <div className='flex justify-between'>
+            <label htmlFor='topic' className='text-gray-700'>
               Topic
             </label>
             <button className='text-left text-gray-400'>
-              Suggest a fun topic idea
+              Suggest a topic idea
             </button>
           </div>
           <input
-            className='border text-gray-50 px-6 outline-none rounded-2xl h-14 bg-gray-800 border-gray-700'
+            className='border text-gray-900 px-6 outline-none rounded-2xl h-14 bg-gray-100 border-gray-200'
             type='text'
             name='topic'
             placeholder='Write anything here'
@@ -64,12 +67,12 @@ export function Form() {
           />
         </div>
         <div className='flex flex-col gap-1'>
-          <label htmlFor='slug' className='text-gray-50'>
+          <label htmlFor='slug' className='text-gray-600'>
             URL Slug
           </label>
           <div className='relative'>
             <input
-              className='h-14 text-gray-50 outline-none pl-11 pr-6 w-full rounded-2xl border bg-gray-800 border-gray-700'
+              className='w-full border text-gray-900 pl-10 pr-6 outline-none rounded-2xl h-14 bg-gray-100 border-gray-200'
               type='text'
               name='slug'
               placeholder='Write anything here'
@@ -82,37 +85,37 @@ export function Form() {
           </div>
         </div>
         <div className='flex flex-col gap-1'>
-          <p className='text-gray-50'>Length</p>
+          <p className='text-gray-600'>Length</p>
           <RadioGroup.Root
             value={length}
             onValueChange={handleChangeLengthValue}
-            className='flex flex-col bg-gray-800 border border-gray-700 rounded-2xl p-2 items-start'
+            className='flex flex-col sm:flex-row bg-gray-100 border border-gray-200 rounded-2xl p-2 items-start'
           >
             <RadioGroup.Item
               value='short'
-              className='rounded-xl data-[state="checked"]:bg-gray-700 data-[state="checked"]:border-gray-600 px-5 py-3 w-full text-left text-gray-50 border border-transparent'
+              className='flex justify-center rounded-xl data-[state="checked"]:bg-gray-200 data-[state="checked"]:border-gray-300 px-5 py-2 w-full text-left border border-transparent text-gray-500 data-[state="checked"]:text-gray-800 outline-none'
             >
-              Short
+              <span className='fade-in'>Short</span>
             </RadioGroup.Item>
             <RadioGroup.Item
               value='medium'
-              className='rounded-xl data-[state="checked"]:bg-gray-700 data-[state="checked"]:border-gray-600 px-5 py-3 w-full text-left text-gray-50 border border-transparent'
+              className='flex justify-center rounded-xl data-[state="checked"]:bg-gray-200 data-[state="checked"]:border-gray-300 px-5 py-2 w-full text-left border border-transparent text-gray-500 data-[state="checked"]:text-gray-800 outline-none'
             >
-              Medium
+              <span className='fade-in'>Medium</span>
             </RadioGroup.Item>
             <RadioGroup.Item
               value='long'
-              className='rounded-xl data-[state="checked"]:bg-gray-700 data-[state="checked"]:border-gray-600 px-5 py-3 w-full text-left text-gray-50 border border-transparent'
+              className='flex justify-center rounded-xl data-[state="checked"]:bg-gray-200 data-[state="checked"]:border-gray-300 px-5 py-2 w-full text-left border border-transparent text-gray-500 data-[state="checked"]:text-gray-800 outline-none'
             >
-              Long
+              <span className='fade-in'>Long</span>
             </RadioGroup.Item>
           </RadioGroup.Root>
         </div>
         <button
           type='submit'
-          className='rounded-2xl bg-gray-800 border mt-3 border-gray-700 py-4 text-gray-50'
+          className='rounded-2xl bg-gray-800 border-gray-600 border py-4 text-gray-50'
         >
-          Submit
+          <span className='fade-in'>Generate</span>
         </button>
       </div>
     </form>

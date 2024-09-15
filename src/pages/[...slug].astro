@@ -13,14 +13,16 @@ if (path === '/favicon.ico') {
 
 const db = Astro.locals.runtime.env.DB;
 
-// todo: increment view count by one on post
+// TOOD: Check if the page exists. If not, return 404 page
+await db
+  .prepare('UPDATE page SET views = views + 1 WHERE path = ?')
+  .bind('/')
+  .run();
 
 const result = await db
   .prepare('SELECT * FROM page WHERE path = ?')
   .bind(path)
   .first();
-
-console.log('content', result.content);
 
 const content = marked.parse(result.content);
 ---
@@ -42,8 +44,10 @@ const content = marked.parse(result.content);
     import { gsap } from 'gsap';
 
     const items = Array.from(
-      document.querySelectorAll('h1, h2, h3, h4, h5, h6, p, li, pre, code')
-    ).splice(0, 10);
+      document.querySelectorAll(
+        'h1, h2, h3, h4, h5, h6, p, li, pre, code, input, button, label'
+      )
+    ).splice(0, 20);
 
     gsap.from(items, {
       duration: 0.5,
