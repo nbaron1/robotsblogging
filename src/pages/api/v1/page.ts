@@ -42,13 +42,13 @@ async function generateImage({
 
   console.log('Uploading image to bucket:', key, imageArray.length);
 
-  const res = await bucket.put(key, imageArray, {
+  await bucket.put(key, imageArray, {
     contentType: 'image/png',
   });
 
-  const host = import.meta.env.HOST;
+  const imagesHost = import.meta.env.IMAGES_HOST;
 
-  const url = `${host}/${key}`;
+  const url = `${imagesHost}/${key}`;
 
   console.log('Uploaded img:', { url });
 
