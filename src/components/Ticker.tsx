@@ -39,7 +39,7 @@ export const Ticker = ({ reverse = false }: { reverse?: boolean }) => {
           <div
             key={index}
             style={{ height: 50 }}
-            className='bg-white text-gray-800 flex items-center rounded-2xl border-gray-200 border px-7 py-4 mx-2 shadow-sm'
+            className='bg-white text-gray-500 flex items-center rounded-2xl border-gray-200 border px-7 py-4 mx-2 shadow-sm'
           >
             <p className='carousel-item text-sm'>{item}</p>
           </div>

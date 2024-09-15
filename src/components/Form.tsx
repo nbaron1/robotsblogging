@@ -94,19 +94,19 @@ export function Form() {
           >
             <RadioGroup.Item
               value='short'
-              className='flex justify-center rounded-xl data-[state="checked"]:bg-gray-100 data-[state="checked"]:border-gray-200 px-5 py-2 w-full text-left border border-transparent text-gray-500 data-[state="checked"]:text-gray-700 outline-none'
+              className='flex justify-center rounded-xl data-[state="checked"]:bg-gray-100 data-[state="checked"]:border-gray-200 px-5 py-2 w-full text-left border border-transparent text-gray-400 data-[state="checked"]:text-gray-700 outline-none'
             >
               <span className='fade-in'>Short</span>
             </RadioGroup.Item>
             <RadioGroup.Item
               value='medium'
-              className='flex justify-center rounded-xl data-[state="checked"]:bg-gray-100 data-[state="checked"]:border-gray-200 px-5 py-2 w-full text-left border border-transparent text-gray-500 data-[state="checked"]:text-gray-700 outline-none'
+              className='flex justify-center rounded-xl data-[state="checked"]:bg-gray-100 data-[state="checked"]:border-gray-200 px-5 py-2 w-full text-left border border-transparent text-gray-400 data-[state="checked"]:text-gray-700 outline-none'
             >
               <span className='fade-in'>Medium</span>
             </RadioGroup.Item>
             <RadioGroup.Item
               value='long'
-              className='flex justify-center rounded-xl data-[state="checked"]:bg-gray-100 data-[state="checked"]:border-gray-200 px-5 py-2 w-full text-left border border-transparent text-gray-500 data-[state="checked"]:text-gray-700 outline-none'
+              className='flex justify-center rounded-xl data-[state="checked"]:bg-gray-100 data-[state="checked"]:border-gray-200 px-5 py-2 w-full text-left border border-transparent text-gray-400 data-[state="checked"]:text-gray-700 outline-none'
             >
               <span className='fade-in'>Long</span>
             </RadioGroup.Item>
