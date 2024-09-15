@@ -4,6 +4,7 @@ import { Score } from '../components/Score';
 import '../global.css';
 import '@fontsource-variable/inter-tight';
 import '@fontsource/inter';
+import { ViewTransitions } from 'astro:transitions';
 
 const path = Astro.url.pathname;
 
@@ -34,13 +35,12 @@ const content = marked.parse(result.content);
     <meta name='color-scheme' content='light' />
     <meta name='generator' content={Astro.generator} />
     <title>Robots Blogging</title>
+    <ViewTransitions />
   </head>
   <body>
     <article set:html={content} />
     <Score />
-  </body>
-
-  <script>
+  </body><script>
     import { gsap } from 'gsap';
 
     const items = Array.from(

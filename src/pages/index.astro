@@ -6,6 +6,7 @@ import '@fontsource/inter';
 import '@fontsource-variable/inter-tight';
 import { Form } from '../components/Form';
 import { Ticker } from '../components/Ticker';
+import { ViewTransitions } from 'astro:transitions';
 
 const db = Astro.locals.runtime.env.DB;
 
@@ -22,6 +23,7 @@ await db
     <meta name='generator' content={Astro.generator} />
     <meta name='color-scheme' content='light' />
     <title>Robots Blogging</title>
+    <ViewTransitions />
   </head>
   <body class='font-sans bg-gray-50 mx-7 flex flex-col gap-11 my-6'>
     <div class='flex justify-between text-gray-800'>
