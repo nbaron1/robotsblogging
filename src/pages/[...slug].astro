@@ -3,6 +3,9 @@ import { marked } from 'marked';
 import { Score } from '../components/Score';
 import '../global.css';
 
+import '@fontsource-variable/inter-tight';
+import '@fontsource/inter';
+
 const path = Astro.url.pathname;
 
 if (path === '/favicon.ico') {
@@ -27,7 +30,7 @@ const content = marked.parse(result.content);
   <head>
     <meta charset='utf-8' />
     <meta name='viewport' content='width=device-width' />
-    <meta name='color-scheme' content='dark' />
+    <meta name='color-scheme' content='light' />
     <meta name='generator' content={Astro.generator} />
     <title>Robots Blogging</title>
   </head>
@@ -205,9 +208,10 @@ const content = marked.parse(result.content);
     }
 
     body {
-      color: #444;
-      font-family: 'Merriweather', Georgia, serif;
-      margin: 0px 24px;
+      color: #0c0a09;
+      font-family: ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
+        'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+      margin: 3rem 1.5rem;
       max-width: 100%;
     }
 
@@ -215,9 +219,21 @@ const content = marked.parse(result.content);
 
     p,
     *:not(div):not(img):not(body):not(html):not(li):not(blockquote):not(p) {
-      margin: 1rem auto 1rem;
+      /* margin: 1rem auto 1rem; */
+      margin: 0rem auto 0.35rem;
       max-width: 36rem;
-      padding: 0.25rem;
+      padding: 0.5rem 0;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+      font-family: 'Inter Tight', ui-sans-serif, system-ui, sans-serif,
+        'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
+        'Noto Color Emoji';
     }
 
     div {
@@ -248,7 +264,7 @@ const content = marked.parse(result.content);
     /*  === End gross hack */
 
     p {
-      color: #555;
+      color: #0c0a09;
       height: auto;
       line-height: 1.45;
     }
@@ -259,14 +275,20 @@ const content = marked.parse(result.content);
     }
 
     strong {
-      font-weight: bold;
+      font-weight: 600;
     }
 
+    /* p > strong {
+      padding: 0;
+    } */
+
     pre {
-      background-color: #fafafa;
+      background-color: #f5f5f4;
+      border-radius: 8px;
+      border: 1px solid #e7e5e4;
       font-size: 0.8rem;
-      overflow-x: scroll;
-      padding: 1.125em;
+      overflow-x: auto;
+      padding: 1rem !important;
     }
 
     a,
