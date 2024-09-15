@@ -10,4 +10,12 @@ bucket = './dist'
 binding = "DB"
 database_name = "generatethiswebsite"
 database_id = "021a0340-a455-4c3f-8b63-d092381c7150"
-preview_database_id = "DB"
+preview_database_id = "021a0340-a455-4c3f-8b63-d092381c7150"
+
+[ai]
+binding = "AI"
+
+[[r2_buckets]]
+binding = 'R2_BUCKET'
+bucket_name = 'robotsblogging'
+preview_bucket_name = 'robotsblogging'
