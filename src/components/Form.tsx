@@ -53,12 +53,13 @@ export function Form() {
             <label htmlFor='topic' className='text-gray-700'>
               Topic
             </label>
-            <button className='text-left text-gray-400'>
+            <button className='text-left font-light text-gray-700'>
               Suggest a topic idea
             </button>
           </div>
           <input
-            className='border text-gray-900 px-6 outline-none rounded-2xl h-14 bg-gray-100 border-gray-200'
+            id='topic'
+            className='border text-gray-700 px-6 outline-none rounded-2xl h-14 bg-gray-50 border-gray-200'
             type='text'
             name='topic'
             placeholder='Write anything here'
@@ -72,7 +73,7 @@ export function Form() {
           </label>
           <div className='relative'>
             <input
-              className='w-full border text-gray-900 pl-10 pr-6 outline-none rounded-2xl h-14 bg-gray-100 border-gray-200'
+              className='w-full border text-gray-700 pl-10 pr-6 outline-none rounded-2xl h-14 bg-gray-50 border-gray-200'
               type='text'
               name='slug'
               placeholder='Write anything here'
@@ -89,23 +90,23 @@ export function Form() {
           <RadioGroup.Root
             value={length}
             onValueChange={handleChangeLengthValue}
-            className='flex flex-col sm:flex-row bg-gray-100 border border-gray-200 rounded-2xl p-2 items-start'
+            className='flex flex-col sm:flex-row bg-gray-50 border border-gray-200 rounded-2xl p-2 items-start'
           >
             <RadioGroup.Item
               value='short'
-              className='flex justify-center rounded-xl data-[state="checked"]:bg-gray-200 data-[state="checked"]:border-gray-300 px-5 py-2 w-full text-left border border-transparent text-gray-500 data-[state="checked"]:text-gray-800 outline-none'
+              className='flex justify-center rounded-xl data-[state="checked"]:bg-gray-100 data-[state="checked"]:border-gray-200 px-5 py-2 w-full text-left border border-transparent text-gray-500 data-[state="checked"]:text-gray-700 outline-none'
             >
               <span className='fade-in'>Short</span>
             </RadioGroup.Item>
             <RadioGroup.Item
               value='medium'
-              className='flex justify-center rounded-xl data-[state="checked"]:bg-gray-200 data-[state="checked"]:border-gray-300 px-5 py-2 w-full text-left border border-transparent text-gray-500 data-[state="checked"]:text-gray-800 outline-none'
+              className='flex justify-center rounded-xl data-[state="checked"]:bg-gray-100 data-[state="checked"]:border-gray-200 px-5 py-2 w-full text-left border border-transparent text-gray-500 data-[state="checked"]:text-gray-700 outline-none'
             >
               <span className='fade-in'>Medium</span>
             </RadioGroup.Item>
             <RadioGroup.Item
               value='long'
-              className='flex justify-center rounded-xl data-[state="checked"]:bg-gray-200 data-[state="checked"]:border-gray-300 px-5 py-2 w-full text-left border border-transparent text-gray-500 data-[state="checked"]:text-gray-800 outline-none'
+              className='flex justify-center rounded-xl data-[state="checked"]:bg-gray-100 data-[state="checked"]:border-gray-200 px-5 py-2 w-full text-left border border-transparent text-gray-500 data-[state="checked"]:text-gray-700 outline-none'
             >
               <span className='fade-in'>Long</span>
             </RadioGroup.Item>
