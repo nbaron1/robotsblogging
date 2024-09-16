@@ -5,6 +5,7 @@ export function Form() {
   const [length, setLength] = useState<'short' | 'medium' | 'long'>('medium');
   const [topic, setTopic] = useState('');
   const [slug, setSlug] = useState('');
+  const [messages, setMessages] = useState<string[]>([]);
 
   const handleChangeLengthValue = (value: string) => {
     if (value !== 'short' && value !== 'medium' && value !== 'long') return;
@@ -20,22 +21,24 @@ export function Form() {
 
       const slugWithSlash = `/${slug}`;
 
-      const response = await fetch('/api/v1/pages', {
-        body: JSON.stringify({ slug: slugWithSlash, topic, length }),
-        method: 'POST',
-      });
+      // const response = await fetch('/api/v1/pages', {
+      //   body: JSON.stringify({ slug: slugWithSlash, topic, length }),
+      //   method: 'POST',
+      // });
 
-      if (!response.ok) {
-        throw new Error('Failed to create page');
-      }
+      // if (!response.ok) {
+      //   throw new Error('Failed to create page');
+      // }
 
-      const data = await response.json();
+      // const data = await response.json();
 
-      if (!data.success) {
-        throw new Error('Failed to create page');
-      }
+      // if (!data.success) {
+      //   throw new Error('Failed to create page');
+      // }
 
-      window.location = data.data.url;
+      console.log('Starting event source');
+
+      window.location.href = `/loading?slug=${encodeURIComponent(slugWithSlash)}&topic=${encodeURIComponent(topic)}&length=${encodeURIComponent(length)}`;
     } catch (error) {
       console.error(error);
     }

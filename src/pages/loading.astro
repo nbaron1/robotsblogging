@@ -1,0 +1,18 @@
+---
+import { ViewTransitions } from 'astro:transitions';
+import { GeneratingPage } from '../components/GeneratingPage';
+---
+
+<html lang='en'>
+  <head>
+    <meta charset='utf-8' />
+    <meta name='viewport' content='width=device-width' />
+    <meta name='generator' content={Astro.generator} />
+    <meta name='color-scheme' content='light' />
+    <title>Robots Blogging</title>
+    <ViewTransitions />
+  </head>
+  <body class='font-sans bg-gray-50 mx-7 flex flex-col gap-11 my-6'
+    ><GeneratingPage client:load />
+  </body>
+</html>

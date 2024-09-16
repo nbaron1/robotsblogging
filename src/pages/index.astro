@@ -11,9 +11,21 @@ import { ViewTransitions } from 'astro:transitions';
 const db = Astro.locals.runtime.env.DB;
 
 await db
-  .prepare('UPDATE page SET views = views + 1 WHERE path = ?')
+  .prepare('UPDATE page SET views = views + 1 WHERE path = ? RETURNING views')
   .bind('/')
   .run();
+
+const { views } = await db
+  .prepare('SELECT SUM(views) as views FROM page')
+  .first();
+
+const { results: highestViewPosts } = await db
+  .prepare(
+    'SELECT id,title,path,views FROM page WHERE path != "/" ORDER BY views DESC LIMIT 6'
+  )
+  .all();
+
+const formattedViews = views.toLocaleString();
 ---
 
 <html lang='en'>
@@ -59,7 +71,7 @@ await db
             >
             </div>
             <p class='font-normal text-gray-600'>
-              This website has had 1,000,000 page views
+              This website has had {formattedViews} page views
             </p>
           </div>
           <div class='flex flex-col gap-7'>
@@ -101,42 +113,58 @@ await db
           </div>
           <div class='grid grid-cols-1 gap-2 sm:grid-cols-2'>
             {
-              Array.from({ length: 6 }).map(() => (
-                <a
-                  href='/'
-                  class='justify-between flex gap-2 p-5 items-center rounded-2xl bg-gray-50 border border-gray-200'
-                >
-                  <p class='text-gray-700 line-clamp-2 font-light'>
-                    10 reasons why dogs shoulddadadadadadadadada
-                  </p>
-                  <p class='text-gray-500 font-light text-nowrap'>+31</p>
-                </a>
-              ))
+              highestViewPosts.map(
+                (post: {
+                  id: number;
+                  title: string;
+                  path: string;
+                  views: number;
+                }) => (
+                  <a
+                    href='/'
+                    class='justify-between flex gap-2 p-5 items-center rounded-2xl bg-gray-50 border border-gray-200'
+                  >
+                    <p class='text-gray-700 line-clamp-2 font-light'>
+                      {post.title}
+                    </p>
+                    <p class='text-gray-500 font-light text-nowrap'>
+                      {post.views} views
+                    </p>
+                  </a>
+                )
+              )
             }
           </div>
         </div>
         <div class='flex flex-col gap-4 w-full max-w-screen-lg mx-auto'>
           <div class='flex flex-col gap-1'>
             <h3 class='text-gray-800 text-2xl font-title'>
-              Top rated blog posts
+              Most viewed blog posts
             </h3>
             <p class='text-gray-700 font-light'>Read the fan favourites</p>
           </div>
           <div class='grid grid-cols-1 gap-2 sm:grid-cols-2'>
             {
-              Array.from({ length: 6 }).map(() => (
-                <a
-                  href='/'
-                  class='justify-between flex gap-2 p-5 items-start rounded-2xl bg-gray-50 border border-gray-200'
-                >
-                  <p class='text-gray-700 line-clamp-2 font-light'>
-                    10 reasons why dogs shoulddadadadadadadadada
-                  </p>
-                  <p class='text-gray-500 font-light text-nowrap'>
-                    3,100 views
-                  </p>
-                </a>
-              ))
+              highestViewPosts.map(
+                (post: {
+                  id: number;
+                  title: string;
+                  path: string;
+                  views: number;
+                }) => (
+                  <a
+                    href='/'
+                    class='justify-between flex gap-2 p-5 items-center rounded-2xl bg-gray-50 border border-gray-200'
+                  >
+                    <p class='text-gray-700 line-clamp-2 font-light'>
+                      {post.title}
+                    </p>
+                    <p class='text-gray-500 font-light text-nowrap'>
+                      {post.views} views
+                    </p>
+                  </a>
+                )
+              )
             }
           </div>
         </div>

@@ -37,8 +37,12 @@ const content = marked.parse(result.content);
     <title>Robots Blogging</title>
     <ViewTransitions />
   </head>
-  <body>
-    <article set:html={content} />
+  <body class='mx-7 my-6'>
+    <header class='!w-full flex'>
+      <a>home</a>
+      <a>posts</a>
+    </header>
+    <article class='my-6' set:html={content} />
     <Score />
   </body><script>
     import { gsap } from 'gsap';
@@ -62,10 +66,8 @@ const content = marked.parse(result.content);
     body {
       font-family: 'Inter', ui-sans-serif, system-ui, sans-serif,
         'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
-        'Noto Color Emoji';
-      background: white;
-      /* background: #1c1917; */
-      /* display: flex; */
+        'Noto Color Emoji' !important;
+      background: #fafaf9;
     }
 
     @media print {
@@ -310,9 +312,31 @@ const content = marked.parse(result.content);
       padding: 1rem !important;
     }
 
+    /* TOOD: Fix this */
     a,
     a:visited {
       color: #3498db;
+    }
+
+    header {
+      display: flex;
+      margin: 0 !important;
+      gap: 12px;
+      width: 100% !important;
+      padding: 0 !important;
+    }
+
+    header a {
+      line-height: 24px !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      font-size: 16px !important;
+      color: #292524;
+    }
+
+    header a:hover {
+      color: #292524;
+      cursor: pointer;
     }
 
     a:hover,

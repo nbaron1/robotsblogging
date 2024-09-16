@@ -55,6 +55,18 @@ async function generateImage({
   return url;
 }
 
+type MessagePayload =
+  | {
+      step: number;
+      completed: boolean;
+      message: string;
+      type: 'progress';
+    }
+  | {
+      type: 'final';
+      path: string;
+    };
+
 class GoogleAIModel {
   constructor(
     private readonly model: string,
@@ -79,7 +91,17 @@ class GoogleAIModel {
     }
   }
 
-  async prompt(prompt: string): Promise<string> {
+  async prompt(
+    prompt: string,
+    sendEvent: (data: MessagePayload) => void
+  ): Promise<string> {
+    sendEvent({
+      step: 2,
+      message: 'Generating content...',
+      completed: false,
+      type: 'progress',
+    });
+
     const genAI = new GoogleGenerativeAI(this.googleAPIKey);
 
     const systemInstruction = this.getSystemInstruction();
@@ -102,6 +124,13 @@ class GoogleAIModel {
     });
 
     const result = await chatSession.sendMessage(prompt);
+
+    sendEvent({
+      step: 2,
+      message: 'Content generated',
+      completed: true,
+      type: 'progress',
+    });
 
     const candidates = result.response.candidates;
 
@@ -134,7 +163,21 @@ class GoogleAIModel {
       );
     }
 
+    sendEvent({
+      step: 3,
+      message: 'Adding the final details...',
+      completed: false,
+      type: 'progress',
+    });
+
     const imageURLs = await Promise.all(imagePromises);
+
+    sendEvent({
+      step: 3,
+      message: 'Generation completed',
+      completed: true,
+      type: 'progress',
+    });
 
     content = content.replace(imageRegex, (_, description) => {
       const imageUrl = imageURLs.shift();
@@ -145,17 +188,47 @@ class GoogleAIModel {
   }
 }
 
-const getAIContent = async (model: GoogleAIModel, prompt: string) => {
-  return await model.prompt(prompt);
+const getAIContent = async (
+  model: GoogleAIModel,
+  prompt: string,
+  sendEvent: (data: MessagePayload) => void
+) => {
+  return await model.prompt(prompt, sendEvent);
 };
 
-export const POST: APIRoute = async ({ request, locals }) => {
+const generateUniqueSlug = async (
+  db: any,
+  slug: string,
+  appendedNumber: null | number
+) => {
+  const { exists } = await db
+    .prepare('SELECT EXISTS (SELECT 1 FROM page WHERE path = ?) as "exists"')
+    .bind(slug)
+    .first();
+
+  if (exists) {
+    return generateUniqueSlug(
+      db,
+      slug,
+      appendedNumber ? appendedNumber + 1 : 1
+    );
+  }
+
+  if (appendedNumber) {
+    return `${slug}-${appendedNumber}`;
+  }
+
+  return slug;
+};
+
+export const GET: APIRoute = async ({ request, locals }) => {
   try {
-    const data = await request.json();
+    // const data = await request.query json();
+    const url = new URL(request.url);
 
-    const { slug, topic, length } = data;
-
-    console.log('Received data:', data);
+    const slug = url.searchParams.get('slug');
+    const topic = url.searchParams.get('topic');
+    const length = url.searchParams.get('length');
 
     if (
       typeof slug !== 'string' ||
@@ -176,61 +249,85 @@ export const POST: APIRoute = async ({ request, locals }) => {
       );
     }
 
-    // check if exists already
-    const db = await locals.runtime.env.DB;
+    const encoder = new TextEncoder();
 
-    const { exists } = await db
-      .prepare('SELECT EXISTS (SELECT 1 FROM page WHERE path = ?) as "exists"')
-      .bind(slug)
-      .first();
+    const body = new ReadableStream({
+      async start(controller) {
+        const sendEvent = (data: MessagePayload) => {
+          controller.enqueue(
+            encoder.encode(`data: ${JSON.stringify(data)}\n\n`)
+          );
+        };
 
-    if (exists) {
-      return new Response(
-        JSON.stringify({
-          success: false,
-          error: 'A page with this slug already exists. Try another one!',
-        }),
-        {
-          status: 400,
-        }
-      );
-    }
-    console.log('Does not exist...');
+        sendEvent({
+          type: 'progress',
+          step: 1,
+          completed: true,
+          message: 'Connected to server',
+        });
 
-    /**
-     * You are an AI that generates website pages from prompts. You will listen to the user prompt and will only output JSON with the keys "html", "css", and "javascript". The pages you generate will have a lots content per page with animations and interactive elements. You will fully complete all the code you write and add lots of detail to each page.
-     */
+        const db = await locals.runtime.env.DB;
 
-    const model = new GoogleAIModel(
-      'gemini-1.5-flash',
-      locals.runtime.env.AI,
-      locals.runtime.env.R2_BUCKET,
-      locals.runtime.env.IMAGES_HOST,
-      locals.runtime.env.GOOGLE_AI_API_KEY
-    );
+        const uniqueSlug = await generateUniqueSlug(db, slug, null);
 
-    const reponse = await getAIContent(model, topic);
+        const model = new GoogleAIModel(
+          'gemini-1.5-flash',
+          locals.runtime.env.AI,
+          locals.runtime.env.R2_BUCKET,
+          locals.runtime.env.IMAGES_HOST,
+          locals.runtime.env.GOOGLE_AI_API_KEY
+        );
 
-    console.log('Inserting into database:');
+        const reponse = await getAIContent(model, topic, sendEvent);
 
-    await db
-      .prepare('INSERT INTO page (content, title, path) VALUES (?, ?, ?)')
-      .bind(reponse, topic, slug)
-      .run();
+        sendEvent({
+          step: 2,
+          completed: true,
+          message: 'Content generated',
+          type: 'progress',
+        });
 
-    console.log('Inserted into database');
+        console.log('Inserting into database:');
 
-    return new Response(
-      JSON.stringify({
-        success: true,
-        data: {
-          url: slug,
-        },
-      }),
-      {
-        status: 200,
-      }
-    );
+        sendEvent({
+          step: 4,
+          completed: false,
+          message: 'Uploading to the cloud...',
+          type: 'progress',
+        });
+
+        await db
+          .prepare('INSERT INTO page (content, title, path) VALUES (?, ?, ?)')
+          .bind(reponse, topic, uniqueSlug)
+          .run();
+
+        sendEvent({
+          step: 4,
+          completed: false,
+          message: 'Redirecting...',
+          type: 'progress',
+        });
+
+        sendEvent({
+          type: 'final',
+          path: uniqueSlug,
+        });
+
+        controller.close();
+
+        request.signal.addEventListener('abort', () => {
+          controller.close();
+        });
+      },
+    });
+
+    return new Response(body, {
+      headers: {
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+        Connection: 'keep-alive',
+      },
+    });
   } catch (error) {
     console.error(error);
 
@@ -238,4 +335,8 @@ export const POST: APIRoute = async ({ request, locals }) => {
       status: 500,
     });
   }
+};
+
+export const PUT: APIRoute = async ({ request, locals }) => {
+  return new Response(null, { status: 200 });
 };

@@ -1,9 +1,8 @@
 import { useEffect, useRef } from 'react';
 import './animation.css';
+
 export const Ticker = ({ reverse = false }: { reverse?: boolean }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
-
-  console.log({ reverse });
 
   useEffect(() => {
     const scrollElement = scrollRef.current;
