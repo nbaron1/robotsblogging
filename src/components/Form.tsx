@@ -57,7 +57,7 @@ export function Form() {
               Topic
             </label>
             <button className='text-left font-light text-gray-700'>
-              Suggest a topic idea
+              <span className='fade-in'>Suggest a topic idea</span>
             </button>
           </div>
           <input

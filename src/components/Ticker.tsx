@@ -6,7 +6,7 @@ export const Ticker = ({
   posts,
 }: {
   reverse?: boolean;
-  posts: { title: string }[];
+  posts: { id: number; title: string; path: string }[];
 }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -20,8 +20,6 @@ export const Ticker = ({
     }
   }, []);
 
-  const tickerItems = posts.map((post) => post.title);
-
   return (
     <div className='relative w-full overflow-hidden bg-gray-50'>
       <div
@@ -31,14 +29,15 @@ export const Ticker = ({
           width: 'fit-content',
         }}
       >
-        {[...tickerItems, ...tickerItems].map((item, index) => (
+        {[...posts, ...posts].map((item, index) => (
           <a
-            href='/'
+            href={item.path}
             key={index}
+            target='_blank'
             style={{ height: 50 }}
             className='font-light carousel-item text-sm bg-white text-gray-500 flex items-center rounded-2xl border-gray-200 border px-7 py-4 mx-2 shadow-sm'
           >
-            {item}
+            {item.title}
           </a>
         ))}
       </div>

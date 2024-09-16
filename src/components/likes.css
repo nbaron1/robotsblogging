@@ -1,4 +1,4 @@
-.liked-heart {
+.liked-heart-animation {
   animation: liked-heart 0.5s;
 }
 
@@ -14,7 +14,7 @@
   }
 }
 
-.fade-in {
+.fade-in-animation {
   animation: fade-in 0.5s;
 }
 

@@ -80,13 +80,13 @@ class GoogleAIModel {
   private getSystemInstruction() {
     switch (this.length) {
       case 'short': {
-        return 'You are an AI that generates markdown code blog posts based on the topic the user submits. You MUST write blog posts that are at least 600 words long and you MUST include images in each blog post';
+        return 'You are an AI that generates markdown code blog posts based on the topic the user submits. You MUST write blog posts that are at least 600 words long and you MUST include images in each blog post. You can include a conclusion but NEVER include a conclusion subheading in your post.';
       }
       case 'medium': {
-        return 'You are an AI that generates markdown code blog posts based on the topic the user submits. You MUST write blog posts that are at least 1,000 words long and you MUST include images in each blog post';
+        return 'You are an AI that generates markdown code blog posts based on the topic the user submits. You MUST write blog posts that are at least 1,000 words long and you MUST include images in each blog post. You can include a conclusion but NEVER include a conclusion subheading in your post.';
       }
       case 'long': {
-        return 'You are an AI that generates markdown code blog posts based on the topic the user submits. You MUST write blog posts that are at least 2,000 words long and you MUST include images in each blog post';
+        return 'You are an AI that generates markdown code blog posts based on the topic the user submits. You MUST write blog posts that are at least 2,000 words long and you MUST include images in each blog post. You can include a conclusion but NEVER include a conclusion subheading in your post.';
       }
     }
   }
@@ -206,7 +206,9 @@ const generateUniqueSlug = async (
     .bind(slug)
     .first();
 
-  if (exists) {
+  const slugExists = exists === 1;
+
+  if (slugExists) {
     return generateUniqueSlug(
       db,
       slug,
@@ -259,17 +261,12 @@ export const GET: APIRoute = async ({ request, locals }) => {
           );
         };
 
-        sendEvent({
-          type: 'progress',
-          step: 1,
-          completed: true,
-          message: 'Connected to server',
-        });
+        console.log('Connected to server');
 
         const db = await locals.runtime.env.DB;
-
+        console.log('Generating unique slug');
         const uniqueSlug = await generateUniqueSlug(db, slug, null);
-
+        console.log('Unique slug:', uniqueSlug);
         const model = new GoogleAIModel(
           'gemini-1.5-flash',
           locals.runtime.env.AI,
@@ -279,13 +276,7 @@ export const GET: APIRoute = async ({ request, locals }) => {
         );
 
         const reponse = await getAIContent(model, topic, sendEvent);
-
-        sendEvent({
-          step: 2,
-          completed: true,
-          message: 'Content generated',
-          type: 'progress',
-        });
+        console.log('Connected to server');
 
         console.log('Inserting into database:');
 
