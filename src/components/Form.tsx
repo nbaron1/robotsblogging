@@ -1,5 +1,33 @@
 import * as RadioGroup from '@radix-ui/react-radio-group';
-import { useState, type HTMLAttributes } from 'react';
+import { useState, type HTMLAttributes, type HtmlHTMLAttributes } from 'react';
+
+const getTopicIdea = async (): Promise<string> => {
+  try {
+    const response = await fetch('/api/v1/topic');
+
+    if (!response.ok) {
+      throw new Error('Failed to get topic ideas');
+    }
+
+    const json = await response.json();
+
+    if (!json.success) {
+      throw new Error('Failed to get topic ideas');
+    }
+
+    return json.data;
+  } catch (error) {
+    const oneSecond = new Promise((resolve) => {
+      setTimeout(() => {
+        resolve('resolved');
+      }, 1000);
+    });
+
+    await oneSecond;
+
+    return getTopicIdea();
+  }
+};
 
 export function Form() {
   const [length, setLength] = useState<'short' | 'medium' | 'long'>('medium');
@@ -11,6 +39,25 @@ export function Form() {
     if (value !== 'short' && value !== 'medium' && value !== 'long') return;
 
     setLength(value);
+  };
+
+  const handleGenerateNewTopicIdea: React.MouseEventHandler<
+    HTMLButtonElement
+  > = async (event) => {
+    try {
+      event.preventDefault();
+
+      const topicIdea = await getTopicIdea();
+      console.log({ topicIdea });
+
+      setTopic(topicIdea);
+
+      const updatedSlug = topicIdea.toLowerCase().replaceAll(' ', '-');
+
+      setSlug(updatedSlug);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const handleSubmit: HTMLAttributes<HTMLFormElement>['onSubmit'] = async (
@@ -56,8 +103,11 @@ export function Form() {
             <label htmlFor='topic' className='text-gray-700'>
               Topic
             </label>
-            <button className='text-left font-light text-gray-700'>
-              <span className='fade-in'>Suggest a topic idea</span>
+            <button
+              onClick={handleGenerateNewTopicIdea}
+              className='text-left font-light text-gray-700'
+            >
+              <span className='fade-in'>Suggest a topic</span>
             </button>
           </div>
           <input
