@@ -1,10 +1,10 @@
 ---
 import { marked } from 'marked';
-import { Score } from '../components/Score';
 import '../global.css';
 import '@fontsource-variable/inter-tight';
 import '@fontsource/inter';
 import { ViewTransitions } from 'astro:transitions';
+import { Likes } from '../components/Likes';
 
 const path = Astro.url.pathname;
 
@@ -39,11 +39,12 @@ const content = marked.parse(result.content);
   </head>
   <body class='mx-7 my-6'>
     <header class='!w-full flex'>
-      <a>home</a>
-      <a>posts</a>
+      <a href='/'>home</a>
+      <a href='/posts'>posts</a>
     </header>
+
     <article class='my-6' set:html={content} />
-    <Score />
+    <Likes id={result.id} client:load />
   </body><script>
     import { gsap } from 'gsap';
 
@@ -239,7 +240,7 @@ const content = marked.parse(result.content);
     /* === A bit of a gross hack so we can have bleeding divs/blockquotes. */
 
     p,
-    *:not(div):not(img):not(body):not(html):not(li):not(blockquote):not(p) {
+    *:not(div):not(img):not(body):not(html):not(li):not(blockquote):not(svg) {
       /* margin: 1rem auto 1rem; */
       margin: 0rem auto 0.35rem;
       max-width: 36rem;
@@ -331,7 +332,7 @@ const content = marked.parse(result.content);
       margin: 0 !important;
       padding: 0 !important;
       font-size: 16px !important;
-      color: #292524;
+      color: #292524 !important;
     }
 
     header a:hover {

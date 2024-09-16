@@ -25,6 +25,10 @@ const { results: highestViewPosts } = await db
   )
   .all();
 
+const { results: recentPosts } = await db
+  .prepare('SELECT title FROM page ORDER BY created_at DESC LIMIT 25')
+  .all();
+
 const formattedViews = views.toLocaleString();
 ---
 
@@ -64,7 +68,7 @@ const formattedViews = views.toLocaleString();
       <div class='flex flex-col max-w-screen-sm self-center'>
         <div class='flex flex-col gap-6'>
           <div
-            class='bg-gray-50 shadow-sm self-start border sm:self-center border-gray-200 w-fit rounded-4xl flex px-7 py-3 items-center gap-3 rounded-3xl'
+            class='bg-gray-50 shadow-sm self-start border sm:self-center border-gray-200 w-fit rounded-full flex px-7 py-3 items-center gap-3'
           >
             <div
               class='w-3 h-3 shrink-0 animate-pulse rounded-full bg-[#4ADE80]'
@@ -100,8 +104,8 @@ const formattedViews = views.toLocaleString();
           }}
         >
         </div>
-        <Ticker client:load />
-        <Ticker client:load reverse />
+        <Ticker posts={recentPosts} client:load />
+        <Ticker posts={recentPosts} client:load reverse />
       </div>
       <div class='flex flex-col gap-12'>
         <div class='flex flex-col gap-4 w-full max-w-screen-lg mx-auto'>

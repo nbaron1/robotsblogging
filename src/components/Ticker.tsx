@@ -1,7 +1,13 @@
 import { useEffect, useRef } from 'react';
 import './animation.css';
 
-export const Ticker = ({ reverse = false }: { reverse?: boolean }) => {
+export const Ticker = ({
+  reverse = false,
+  posts,
+}: {
+  reverse?: boolean;
+  posts: { title: string }[];
+}) => {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -14,16 +20,7 @@ export const Ticker = ({ reverse = false }: { reverse?: boolean }) => {
     }
   }, []);
 
-  const tickerItems = [
-    '10 reasons why dogs are great pets',
-    'The benefits of daily exercise',
-    'How to start a vegetable garden',
-    'Top 5 destinations for summer vacation',
-    'Easy recipes for busy weeknights',
-    'The importance of reading in child development',
-    'Tips for reducing stress at work',
-    'Best practices for home office setup',
-  ];
+  const tickerItems = posts.map((post) => post.title);
 
   return (
     <div className='relative w-full overflow-hidden bg-gray-50'>
