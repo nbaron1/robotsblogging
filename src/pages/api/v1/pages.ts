@@ -80,13 +80,13 @@ class GoogleAIModel {
   private getSystemInstruction() {
     switch (this.length) {
       case 'short': {
-        return 'You are an AI that generates markdown code blog posts based on the topic the user submits. You MUST write blog posts that are at least 600 words long and you MUST include images in each blog post. You can include a conclusion but NEVER include a conclusion subheading in your post.';
+        return 'You are an AI that generates markdown code blog posts based on the topic the user submits. You MUST write blog posts that are at least 600 words long and you MUST include images in each blog post. You can include a conclusion but NEVER include a conclusion subheading in your post. NEVER include placeholder text for an image.';
       }
       case 'medium': {
-        return 'You are an AI that generates markdown code blog posts based on the topic the user submits. You MUST write blog posts that are at least 1,000 words long and you MUST include images in each blog post. You can include a conclusion but NEVER include a conclusion subheading in your post.';
+        return 'You are an AI that generates markdown code blog posts based on the topic the user submits. You MUST write blog posts that are at least 1,000 words long and you MUST include images in each blog post. You can include a conclusion but NEVER include a conclusion subheading in your post. NEVER include placeholder text for an image.';
       }
       case 'long': {
-        return 'You are an AI that generates markdown code blog posts based on the topic the user submits. You MUST write blog posts that are at least 2,000 words long and you MUST include images in each blog post. You can include a conclusion but NEVER include a conclusion subheading in your post.';
+        return 'You are an AI that generates markdown code blog posts based on the topic the user submits. You MUST write blog posts that are at least 2,000 words long and you MUST include images in each blog post. You can include a conclusion but NEVER include a conclusion subheading in your post. NEVER include placeholder text for an image.';
       }
     }
   }
