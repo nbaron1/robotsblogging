@@ -14,7 +14,7 @@ async function generateImage({
   imagesHost: string;
 }): Promise<string> {
   const imageStream = await AI.run(
-    '@cf/bytedance/stable-diffusion-xl-lightning',
+    '@cf/stabilityai/stable-diffusion-xl-base-1.0',
     {
       prompt: description,
     }
@@ -61,16 +61,32 @@ class GoogleAIModel {
     private readonly AI: any,
     private readonly bucket: any,
     private readonly imagesHost: string,
-    private readonly googleAPIKey: string
+    private readonly googleAPIKey: string,
+    private readonly length: 'short' | 'medium' | 'long' = 'medium'
   ) {}
+
+  private getSystemInstruction() {
+    switch (this.length) {
+      case 'short': {
+        return 'You are an AI that generates markdown code blog posts based on the topic the user submits. You MUST write blog posts that are at least 600 words long and you MUST include images in each blog post';
+      }
+      case 'medium': {
+        return 'You are an AI that generates markdown code blog posts based on the topic the user submits. You MUST write blog posts that are at least 1,000 words long and you MUST include images in each blog post';
+      }
+      case 'long': {
+        return 'You are an AI that generates markdown code blog posts based on the topic the user submits. You MUST write blog posts that are at least 2,000 words long and you MUST include images in each blog post';
+      }
+    }
+  }
 
   async prompt(prompt: string): Promise<string> {
     const genAI = new GoogleGenerativeAI(this.googleAPIKey);
 
+    const systemInstruction = this.getSystemInstruction();
+
     const model = genAI.getGenerativeModel({
       model: this.model,
-      systemInstruction:
-        'You are an AI that generates markdown code blog posts based on the topic idea the user submits. You will write long blog posts which are at least 1000 words long and you MUST include images in each blog post.',
+      systemInstruction: systemInstruction,
     });
 
     const generationConfig = {

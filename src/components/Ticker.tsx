@@ -36,13 +36,14 @@ export const Ticker = ({ reverse = false }: { reverse?: boolean }) => {
         }}
       >
         {[...tickerItems, ...tickerItems].map((item, index) => (
-          <div
+          <a
+            href='/'
             key={index}
             style={{ height: 50 }}
-            className='bg-white text-gray-500 flex items-center rounded-2xl border-gray-200 border px-7 py-4 mx-2 shadow-sm'
+            className='font-light carousel-item text-sm bg-white text-gray-500 flex items-center rounded-2xl border-gray-200 border px-7 py-4 mx-2 shadow-sm'
           >
-            <p className='carousel-item text-sm'>{item}</p>
-          </div>
+            {item}
+          </a>
         ))}
       </div>
     </div>
