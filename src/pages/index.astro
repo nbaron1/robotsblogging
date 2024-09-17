@@ -1,7 +1,4 @@
 ---
-/**
- * You are an AI that generates website pages from prompts. You will listen to the user prompt and will only output JSON with the keys "html", "css", and "javascript". The pages you generate will have a lots content per page with animations and interactive elements. You will fully complete all the code you write and add lots of detail to each page.
- */
 import '@fontsource/inter';
 import '@fontsource-variable/inter-tight';
 import { Form } from '../components/Form';
@@ -42,8 +39,6 @@ const { results: recentPosts } = await db
   .prepare('SELECT id,title,path FROM page ORDER BY created_at DESC LIMIT 25')
   .all();
 
-// const {} = await db.prepare('SELECT id,title,');
-
 const formattedViews = views.toLocaleString();
 ---
 
@@ -60,7 +55,6 @@ const formattedViews = views.toLocaleString();
     <div class='flex justify-between text-gray-800'>
       <div class='flex gap-3'>
         <a href='/'>home</a>
-        <a href='/'>posts</a>
       </div>
       <p class='text-gray-600 hidden sm:block'>
         an experiment by <a
