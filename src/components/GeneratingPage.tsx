@@ -86,14 +86,15 @@ export function GeneratingPage() {
     const slug = url.searchParams.get('slug');
     const topic = url.searchParams.get('topic');
     const length = url.searchParams.get('length');
+    const token = url.searchParams.get('token');
 
-    if (!slug || !topic || !length) {
-      console.error('Missing slug, topic, or length');
+    if (!slug || !topic || !length || !token) {
+      console.error('Missing slug, topic, length, or token');
       return;
     }
 
     const eventSource = new EventSource(
-      `/api/v1/pages?slug=${encodeURIComponent(slug)}&topic=${encodeURIComponent(topic)}&length=${encodeURIComponent(length)}`
+      `/api/v1/pages?slug=${encodeURIComponent(slug)}&topic=${encodeURIComponent(topic)}&length=${encodeURIComponent(length)}&token=${encodeURIComponent(token)}`
     );
 
     console.log('Event source created');

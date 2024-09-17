@@ -10,6 +10,7 @@ import { ViewTransitions } from 'astro:transitions';
 import dedent from 'dedent';
 
 const db = Astro.locals.runtime.env.DB;
+const siteKey = Astro.locals.runtime.env.PUBLIC_TURNSTILE_SITE_KEY;
 
 await db
   .prepare('UPDATE page SET views = views + 1 WHERE path = ? RETURNING views')
@@ -41,7 +42,7 @@ const { results: recentPosts } = await db
   .prepare('SELECT id,title,path FROM page ORDER BY created_at DESC LIMIT 25')
   .all();
 
-const {} = await db.prepare('SELECT id,title,');
+// const {} = await db.prepare('SELECT id,title,');
 
 const formattedViews = views.toLocaleString();
 ---
@@ -105,7 +106,7 @@ const formattedViews = views.toLocaleString();
                 What happens when AI creates higher quality content than humans?
               </p>
             </div>
-            <Form client:load />
+            <Form client:load siteKey={siteKey} />
           </div>
         </div>
       </div>

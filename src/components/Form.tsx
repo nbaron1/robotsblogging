@@ -1,5 +1,6 @@
 import * as RadioGroup from '@radix-ui/react-radio-group';
-import { useState, type HTMLAttributes, type HtmlHTMLAttributes } from 'react';
+import { useRef, useState, type HTMLAttributes } from 'react';
+import { Turnstile, type TurnstileInstance } from '@marsidev/react-turnstile';
 
 const getTopicIdea = async (): Promise<string> => {
   try {
@@ -29,11 +30,12 @@ const getTopicIdea = async (): Promise<string> => {
   }
 };
 
-export function Form() {
+export function Form({ siteKey }: { siteKey: string }) {
   const [length, setLength] = useState<'short' | 'medium' | 'long'>('medium');
   const [topic, setTopic] = useState('');
   const [slug, setSlug] = useState('');
-  const [messages, setMessages] = useState<string[]>([]);
+  // const [messages, setMessages] = useState<string[]>([]);
+  const turnstileRef = useRef<TurnstileInstance>(null);
 
   const handleChangeLengthValue = (value: string) => {
     if (value !== 'short' && value !== 'medium' && value !== 'long') return;
@@ -66,8 +68,6 @@ export function Form() {
     try {
       event.preventDefault();
 
-      const slugWithSlash = `/${slug}`;
-
       // const response = await fetch('/api/v1/pages', {
       //   body: JSON.stringify({ slug: slugWithSlash, topic, length }),
       //   method: 'POST',
@@ -83,12 +83,21 @@ export function Form() {
       //   throw new Error('Failed to create page');
       // }
 
-      console.log('Starting event source');
+      if (!turnstileRef.current) {
+        return;
+      }
 
-      window.location.href = `/loading?slug=${encodeURIComponent(slugWithSlash)}&topic=${encodeURIComponent(topic)}&length=${encodeURIComponent(length)}`;
+      console.log('Starting event source');
+      turnstileRef.current.execute();
     } catch (error) {
       console.error(error);
     }
+  };
+
+  const handleSuccess = (token: string) => {
+    const slugWithSlash = `/${slug}`;
+    turnstileRef.current?.reset();
+    window.location.href = `/loading?slug=${encodeURIComponent(slugWithSlash)}&topic=${encodeURIComponent(topic)}&length=${encodeURIComponent(length)}&token=${encodeURIComponent(token)}`;
   };
 
   return (
@@ -165,12 +174,27 @@ export function Form() {
             </RadioGroup.Item>
           </RadioGroup.Root>
         </div>
-        <button
-          type='submit'
-          className='rounded-2xl bg-gray-800 border-gray-600 border py-4 text-gray-50'
-        >
-          <span className='fade-in'>Generate</span>
-        </button>
+        <div className='relative w-full'>
+          <button
+            type='submit'
+            className='w-full rounded-2xl bg-gray-800 border-gray-600 border py-4 text-gray-50'
+          >
+            <span className='fade-in'>Generate</span>
+          </button>
+          <div className='w-full absolute z-50 top-0 -translate-y-[calc(100%_+_12px)]  sm:left-0 right-0'>
+            <Turnstile
+              siteKey={siteKey}
+              onSuccess={handleSuccess}
+              options={{
+                size: 'flexible',
+                theme: 'light',
+                feedbackEnabled: false,
+                execution: 'execute',
+              }}
+              ref={turnstileRef}
+            />
+          </div>
+        </div>
       </div>
     </form>
   );

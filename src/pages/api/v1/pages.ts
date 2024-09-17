@@ -225,17 +225,22 @@ const generateUniqueSlug = async (
 
 export const GET: APIRoute = async ({ request, locals }) => {
   try {
-    // const data = await request.query json();
     const url = new URL(request.url);
+
+    console.log('Get url');
 
     const slug = url.searchParams.get('slug');
     const topic = url.searchParams.get('topic');
     const length = url.searchParams.get('length');
+    const token = url.searchParams.get('token');
+
+    console.log('TOKEN', token);
 
     if (
       typeof slug !== 'string' ||
       typeof topic !== 'string' ||
-      typeof length !== 'string'
+      typeof length !== 'string' ||
+      typeof token !== 'string'
     ) {
       return new Response(JSON.stringify({ message: 'Invalid body' }), {
         status: 400,
@@ -326,8 +331,4 @@ export const GET: APIRoute = async ({ request, locals }) => {
       status: 500,
     });
   }
-};
-
-export const PUT: APIRoute = async ({ request, locals }) => {
-  return new Response(null, { status: 200 });
 };
