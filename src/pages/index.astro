@@ -106,7 +106,7 @@ const formattedViews = views.toLocaleString();
                 What happens when AI creates higher quality content than humans?
               </p>
             </div>
-            <Form client:load siteKey={siteKey} />
+            <Form client:only='react' siteKey={siteKey} />
           </div>
         </div>
       </div>

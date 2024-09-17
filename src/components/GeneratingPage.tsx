@@ -70,11 +70,50 @@ type MessagePayload =
       path: string;
     };
 
+type CreatePostPayload = {
+  slug: string;
+  topic: string;
+  length: string;
+  token: string;
+};
+
 export function GeneratingPage() {
   const [messages, setMessages] = useState<
     { message: string; completed: boolean }[]
   >([]);
   const hasLoadedRef = useRef(false);
+
+  const createPost = async ({
+    slug,
+    topic,
+    length,
+    token,
+  }: CreatePostPayload) => {
+    try {
+      const result = await fetch('/api/v1/pages', {
+        method: 'POST',
+        body: JSON.stringify({ slug, topic, length, token }),
+      });
+
+      if (!result.ok) {
+        throw new Error('Failed to create post');
+      }
+
+      const data = await result.json();
+
+      console.log({ data });
+    } catch (error) {
+      const oneSecond = new Promise<void>((resolve) => {
+        setTimeout(() => {
+          resolve();
+        }, 1000);
+      });
+
+      await oneSecond;
+
+      return createPost({ length, slug, topic, token });
+    }
+  };
 
   useEffect(() => {
     if (hasLoadedRef.current) return;
@@ -92,6 +131,11 @@ export function GeneratingPage() {
       console.error('Missing slug, topic, length, or token');
       return;
     }
+
+    // const response = await fetch('/api/v1/pages', {
+    //   body: JSON.stringify({ slug, topic, length, token }),
+    //   method: 'POST',
+    // });
 
     const eventSource = new EventSource(
       `/api/v1/pages?slug=${encodeURIComponent(slug)}&topic=${encodeURIComponent(topic)}&length=${encodeURIComponent(length)}&token=${encodeURIComponent(token)}`

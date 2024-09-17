@@ -2,6 +2,52 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 import type { APIRoute } from 'astro';
 import { v4 as uuid } from 'uuid';
 
+const getCloudflareAIStream = async (
+  AI: any,
+  description: string,
+  model: string
+) => {
+  return await AI.run(model, {
+    prompt: description,
+  });
+};
+
+// Add fallback models incase we hit a rate limit
+async function getImageStream({
+  AI,
+  description,
+}: {
+  AI: any;
+  description: string;
+}) {
+  try {
+    const stream = await getCloudflareAIStream(
+      AI,
+      description,
+      '@cf/stabilityai/stable-diffusion-xl-base-1.0'
+    );
+    return stream;
+  } catch (error) {
+    try {
+      const stream = await getCloudflareAIStream(
+        AI,
+        description,
+        '@cf/bytedance/stable-diffusion-xl-lightning'
+      );
+
+      return stream;
+    } catch (error) {
+      const stream = await getCloudflareAIStream(
+        AI,
+        description,
+        '@cf/lykon/dreamshaper-8-lcm'
+      );
+
+      return stream;
+    }
+  }
+}
+
 async function generateImage({
   description,
   AI,
@@ -13,14 +59,8 @@ async function generateImage({
   bucket: any;
   imagesHost: string;
 }): Promise<string> {
-  const imageStream = await AI.run(
-    '@cf/stabilityai/stable-diffusion-xl-base-1.0',
-    {
-      prompt: description,
-    }
-  );
-
   const chunks = [];
+  const imageStream = await getImageStream({ AI, description });
   const reader = imageStream.getReader();
 
   while (true) {
@@ -55,18 +95,6 @@ async function generateImage({
   return url;
 }
 
-type MessagePayload =
-  | {
-      step: number;
-      completed: boolean;
-      message: string;
-      type: 'progress';
-    }
-  | {
-      type: 'final';
-      path: string;
-    };
-
 class GoogleAIModel {
   constructor(
     private readonly model: string,
@@ -91,17 +119,7 @@ class GoogleAIModel {
     }
   }
 
-  async prompt(
-    prompt: string,
-    sendEvent: (data: MessagePayload) => void
-  ): Promise<string> {
-    sendEvent({
-      step: 2,
-      message: 'Generating content...',
-      completed: false,
-      type: 'progress',
-    });
-
+  async prompt(prompt: string): Promise<string> {
     const genAI = new GoogleGenerativeAI(this.googleAPIKey);
 
     const systemInstruction = this.getSystemInstruction();
@@ -124,13 +142,6 @@ class GoogleAIModel {
     });
 
     const result = await chatSession.sendMessage(prompt);
-
-    sendEvent({
-      step: 2,
-      message: 'Content generated',
-      completed: true,
-      type: 'progress',
-    });
 
     const candidates = result.response.candidates;
 
@@ -163,21 +174,7 @@ class GoogleAIModel {
       );
     }
 
-    sendEvent({
-      step: 3,
-      message: 'Adding the final details...',
-      completed: false,
-      type: 'progress',
-    });
-
     const imageURLs = await Promise.all(imagePromises);
-
-    sendEvent({
-      step: 3,
-      message: 'Generation completed',
-      completed: true,
-      type: 'progress',
-    });
 
     content = content.replace(imageRegex, (_, description) => {
       const imageUrl = imageURLs.shift();
@@ -188,12 +185,8 @@ class GoogleAIModel {
   }
 }
 
-const getAIContent = async (
-  model: GoogleAIModel,
-  prompt: string,
-  sendEvent: (data: MessagePayload) => void
-) => {
-  return await model.prompt(prompt, sendEvent);
+const getAIContent = async (model: GoogleAIModel, prompt: string) => {
+  return await model.prompt(prompt);
 };
 
 const generateUniqueSlug = async (
@@ -201,14 +194,18 @@ const generateUniqueSlug = async (
   slug: string,
   appendedNumber: null | number
 ) => {
+  const parsedSlug =
+    appendedNumber !== null ? `${slug}-${appendedNumber}` : slug;
+
   const { exists } = await db
     .prepare('SELECT EXISTS (SELECT 1 FROM page WHERE path = ?) as "exists"')
-    .bind(slug)
+    .bind(parsedSlug)
     .first();
 
   const slugExists = exists === 1;
 
   if (slugExists) {
+    console.log('Slug exists:', parsedSlug);
     return generateUniqueSlug(
       db,
       slug,
@@ -217,24 +214,23 @@ const generateUniqueSlug = async (
   }
 
   if (appendedNumber) {
-    return `${slug}-${appendedNumber}`;
+    return parsedSlug;
   }
 
-  return slug;
+  return parsedSlug;
 };
 
-export const GET: APIRoute = async ({ request, locals }) => {
+export const POST: APIRoute = async ({ request, locals }) => {
   try {
-    const url = new URL(request.url);
+    const data = await request.json();
 
-    console.log('Get url');
+    const { slug, topic, length, token } = data;
 
-    const slug = url.searchParams.get('slug');
-    const topic = url.searchParams.get('topic');
-    const length = url.searchParams.get('length');
-    const token = url.searchParams.get('token');
-
-    console.log('TOKEN', token);
+    if (!slug || !topic || !length || !token) {
+      return new Response(JSON.stringify({ message: 'Invalid body' }), {
+        status: 400,
+      });
+    }
 
     if (
       typeof slug !== 'string' ||
@@ -255,80 +251,42 @@ export const GET: APIRoute = async ({ request, locals }) => {
         }
       );
     }
+    const db = await locals.runtime.env.DB;
 
-    const encoder = new TextEncoder();
+    const uniqueSlug = await generateUniqueSlug(db, slug, null);
 
-    const body = new ReadableStream({
-      async start(controller) {
-        const sendEvent = (data: MessagePayload) => {
-          controller.enqueue(
-            encoder.encode(`data: ${JSON.stringify(data)}\n\n`)
-          );
-        };
+    const model = new GoogleAIModel(
+      'gemini-1.5-flash',
+      locals.runtime.env.AI,
+      locals.runtime.env.R2_BUCKET,
+      locals.runtime.env.IMAGES_HOST,
+      locals.runtime.env.GOOGLE_AI_API_KEY
+    );
 
-        console.log('Connected to server');
+    const reponse = await getAIContent(model, topic);
 
-        const db = await locals.runtime.env.DB;
-        console.log('Generating unique slug');
-        const uniqueSlug = await generateUniqueSlug(db, slug, null);
-        console.log('Unique slug:', uniqueSlug);
-        const model = new GoogleAIModel(
-          'gemini-1.5-flash',
-          locals.runtime.env.AI,
-          locals.runtime.env.R2_BUCKET,
-          locals.runtime.env.IMAGES_HOST,
-          locals.runtime.env.GOOGLE_AI_API_KEY
-        );
+    await db
+      .prepare('INSERT INTO page (content, title, path) VALUES (?, ?, ?)')
+      .bind(reponse, topic, uniqueSlug)
+      .run();
 
-        const reponse = await getAIContent(model, topic, sendEvent);
-        console.log('Connected to server');
-
-        console.log('Inserting into database:');
-
-        sendEvent({
-          step: 4,
-          completed: false,
-          message: 'Uploading to the cloud...',
-          type: 'progress',
-        });
-
-        await db
-          .prepare('INSERT INTO page (content, title, path) VALUES (?, ?, ?)')
-          .bind(reponse, topic, uniqueSlug)
-          .run();
-
-        sendEvent({
-          step: 4,
-          completed: false,
-          message: 'Redirecting...',
-          type: 'progress',
-        });
-
-        sendEvent({
-          type: 'final',
-          path: uniqueSlug,
-        });
-
-        controller.close();
-
-        request.signal.addEventListener('abort', () => {
-          controller.close();
-        });
-      },
-    });
-
-    return new Response(body, {
-      headers: {
-        'Content-Type': 'text/event-stream',
-        'Cache-Control': 'no-cache',
-        Connection: 'keep-alive',
-      },
-    });
+    return new Response(
+      JSON.stringify({
+        data: { slug: uniqueSlug, topic, length },
+        success: true,
+      }),
+      {
+        status: 200,
+      }
+    );
   } catch (error) {
     console.error(error);
 
-    return new Response(JSON.stringify({ message: 'Something went wrong' }), {
-      status: 500,
-    });
+    return new Response(
+      JSON.stringify({ error: 'Something went wrong', success: false }),
+      {
+        status: 500,
+      }
+    );
   }
 };

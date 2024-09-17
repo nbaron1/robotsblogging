@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import './animation.css';
+import './ticker-animation.css';
 
 export const Ticker = ({
   reverse = false,
