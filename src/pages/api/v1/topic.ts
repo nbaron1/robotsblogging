@@ -8,13 +8,13 @@ export const GET: APIRoute = async ({ locals }) => {
     const model = genAI.getGenerativeModel({
       model: 'gemini-1.5-flash',
       systemInstruction:
-        'You are an AI that generates creative ideas for a blog post. You will respond with only a few words. Do not use any punctuation.',
+        'You are an AI that generates unqiue topics for blog posts The Onion would write about. You will only respond with the title of the blog post. Do not use any punctuation.',
     });
 
     const generationConfig = {
       temperature: 1,
-      topP: 0.95,
-      topK: 64,
+      topP: 1,
+      topK: 100,
       maxOutputTokens: 8192,
       responseMimeType: 'text/plain',
     };
