@@ -1,11 +1,10 @@
 import type { APIRoute } from 'astro';
+import { v4 as uuid } from 'uuid';
 
-export const GET: APIRoute = async ({ request, clientAddress, locals }) => {
+export const GET: APIRoute = async ({ request, locals, cookies }) => {
   try {
     const params = new URL(request.url).searchParams;
     const id = params.get('id');
-
-    console.log(request.url);
 
     if (typeof id !== 'string') {
       return new Response('Invalid request', { status: 400 });
@@ -13,11 +12,13 @@ export const GET: APIRoute = async ({ request, clientAddress, locals }) => {
 
     const db = await locals.runtime.env.DB;
 
+    const userId = cookies.get('userId')?.value ?? uuid();
+
     const { liked } = await db
       .prepare(
-        'SELECT EXISTS(SELECT 1 FROM user_like WHERE page_id = ?1 AND ip = ?2) AS liked'
+        'SELECT EXISTS(SELECT 1 FROM user_like WHERE page_id = ?1 AND user_id = ?2) AS liked'
       )
-      .bind(id, clientAddress)
+      .bind(id, userId)
       .first();
 
     const isLiked = liked === 1 ? true : false;
@@ -36,7 +37,12 @@ export const GET: APIRoute = async ({ request, clientAddress, locals }) => {
         },
         success: true,
       }),
-      { status: 200 }
+      {
+        status: 200,
+        headers: {
+          'Set-Cookie': `userId=${userId}; Expires=Fri, 31 Dec 9999 23:59:59 GMT; Path=/`,
+        },
+      }
     );
   } catch {
     return new Response(
@@ -46,7 +52,7 @@ export const GET: APIRoute = async ({ request, clientAddress, locals }) => {
   }
 };
 
-export const POST: APIRoute = async ({ clientAddress, request, locals }) => {
+export const POST: APIRoute = async ({ request, locals, cookies }) => {
   try {
     const body = await request.json();
 
@@ -66,22 +72,15 @@ export const POST: APIRoute = async ({ clientAddress, request, locals }) => {
       );
     }
 
-    // todo: create user based on ip if not exists
-
-    // if liked=true:
-    // create new row if it doesn't exist
-    // do nothing it exists
-
-    console.log('ip');
-
     const db = await locals.runtime.env.DB;
+    const userId = cookies.get('userId')?.value ?? uuid();
 
     if (liked) {
       await db
         .prepare(
-          'INSERT OR IGNORE INTO user_like (page_id, ip) VALUES (?1, ?2)'
+          'INSERT OR IGNORE INTO user_like (page_id, user_id) VALUES (?1, ?2)'
         )
-        .bind(id, clientAddress)
+        .bind(id, userId)
         .run();
 
       const { likes } = await db
@@ -105,8 +104,8 @@ export const POST: APIRoute = async ({ clientAddress, request, locals }) => {
     }
 
     await db
-      .prepare('DELETE FROM user_like WHERE page_id = ?1 AND ip = ?2')
-      .bind(id, clientAddress)
+      .prepare('DELETE FROM user_like WHERE page_id = ?1 AND user_id = ?2')
+      .bind(id, userId)
       .run();
 
     const { likes } = await db
@@ -123,7 +122,12 @@ export const POST: APIRoute = async ({ clientAddress, request, locals }) => {
         },
         success: true,
       }),
-      { status: 200 }
+      {
+        status: 200,
+        headers: {
+          'Set-Cookie': `userId=${userId}; Expires=Fri, 31 Dec 9999 23:59:59 GMT; Path=/`,
+        },
+      }
     );
   } catch (error) {
     // todo: add logging

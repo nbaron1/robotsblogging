@@ -11,9 +11,9 @@ INSERT INTO page (content, title, path) VALUES ('', 'Home', '/');
 
 CREATE TABLE IF NOT EXISTS user_like (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    ip TEXT NOT NULL,
+    user_id TEXT NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     page_id INTEGER NOT NULL,
     FOREIGN KEY(page_id) REFERENCES page(id)
-    UNIQUE(ip, page_id)
+    UNIQUE(user_id, page_id)
 );

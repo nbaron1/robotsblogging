@@ -7,6 +7,7 @@ import '@fontsource-variable/inter-tight';
 import { Form } from '../components/Form';
 import { Ticker } from '../components/Ticker';
 import { ViewTransitions } from 'astro:transitions';
+import dedent from 'dedent';
 
 const db = Astro.locals.runtime.env.DB;
 
@@ -19,7 +20,18 @@ const { views } = await db
   .prepare('SELECT SUM(views) as views FROM page')
   .first();
 
-const { results: highestViewPosts } = await db
+const { results: mostLikedPosts } = await db
+  .prepare(
+    dedent`SELECT p.id, p.title, p.path, COUNT(ul.id) AS like_count
+           FROM page p
+           LEFT JOIN user_like ul ON p.id = ul.page_id
+           GROUP BY p.id
+           ORDER BY like_count DESC
+           LIMIT 5;`
+  )
+  .all();
+
+const { results: mostViewedPosts } = await db
   .prepare(
     'SELECT id,title,path,views FROM page WHERE path != "/" ORDER BY views DESC LIMIT 6'
   )
@@ -119,22 +131,22 @@ const formattedViews = views.toLocaleString();
           </div>
           <div class='grid grid-cols-1 gap-2 sm:grid-cols-2'>
             {
-              highestViewPosts.map(
+              mostLikedPosts.map(
                 (post: {
                   id: number;
                   title: string;
                   path: string;
-                  views: number;
+                  like_count: number;
                 }) => (
                   <a
-                    href='/'
+                    href={post.path}
                     class='justify-between flex gap-2 p-5 items-center rounded-2xl bg-gray-50 border border-gray-200'
                   >
                     <p class='text-gray-700 line-clamp-2 font-light'>
                       {post.title}
                     </p>
                     <p class='text-gray-500 font-light text-nowrap'>
-                      {post.views} views
+                      {post.like_count} likes
                     </p>
                   </a>
                 )
@@ -151,7 +163,7 @@ const formattedViews = views.toLocaleString();
           </div>
           <div class='grid grid-cols-1 gap-2 sm:grid-cols-2'>
             {
-              highestViewPosts.map(
+              mostViewedPosts.map(
                 (post: {
                   id: number;
                   title: string;
@@ -176,7 +188,7 @@ const formattedViews = views.toLocaleString();
         </div>
       </div>
     </div>
-    <p class='flex text-gray-400'>built by robots for humans</p>
+    <p class='text-sm text-gray-400'>built by robots for humans</p>
   </body>
 </html>
 

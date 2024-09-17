@@ -22,6 +22,7 @@
     "@types/react": "^18.3.5",
     "@types/react-dom": "^18.3.0",
     "astro": "^4.15.5",
+    "dedent": "^1.5.3",
     "gsap": "^3.12.5",
     "marked": "^14.1.2",
     "react": "^18.3.1",
