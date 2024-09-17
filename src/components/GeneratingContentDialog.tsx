@@ -67,7 +67,7 @@ export function GeneratingContentDialog({
           </div>
           <div className='flex flex-col items-center gap-2'>
             <Dialog.Title className='font-title text-center text-2xl'>
-              Generating post
+              Generating blog post
             </Dialog.Title>
             <Dialog.Description
               ref={textRef}
@@ -78,7 +78,7 @@ export function GeneratingContentDialog({
             </Dialog.Description>
           </div>
           <p className='text-gray-800 text-center font-light text-sm'>
-            Creating a post usually takes ~30 seconds
+            Creating a post typically takes ~30 seconds
           </p>
         </Dialog.Content>
       </Dialog.Portal>

@@ -28,7 +28,7 @@ const { results: mostLikedPosts } = await db
            LEFT JOIN user_like ul ON p.id = ul.page_id
            GROUP BY p.id
            ORDER BY like_count DESC
-           LIMIT 5;`
+           LIMIT 6;`
   )
   .all();
 

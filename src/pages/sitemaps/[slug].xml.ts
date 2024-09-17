@@ -2,7 +2,7 @@ import type { APIRoute } from 'astro';
 
 const URLS_PER_SITEMAP = 5000;
 
-export const GET: APIRoute = async ({ request, params, locals }) => {
+export const GET: APIRoute = async ({ params, locals }) => {
   console.log(params.slug);
 
   const slug = Number(params.slug);
