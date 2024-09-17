@@ -148,6 +148,7 @@ const content = marked.parse(result.content);
     }
 
     @media screen and (min-width: 24rem) {
+      h1,
       h2 {
         font-size: 44px !important;
       }
@@ -186,6 +187,7 @@ const content = marked.parse(result.content);
       font-size: 3.998rem;
     }
 
+    h1,
     h2 {
       font-size: 44px;
     }
@@ -234,6 +236,10 @@ const content = marked.parse(result.content);
     html {
       font-size: 18px;
       max-width: 100%;
+    }
+
+    img {
+      border-radius: 8px;
     }
 
     body {
@@ -285,10 +291,6 @@ const content = marked.parse(result.content);
     }
 
     /* Counteract the specificity of the gross *:not() chain. */
-
-    h1 {
-      padding: 4rem 0 !important;
-    }
 
     /*  === End gross hack */
 
