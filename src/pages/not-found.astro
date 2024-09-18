@@ -1,0 +1,36 @@
+---
+import { ViewTransitions } from 'astro:transitions';
+---
+
+<html lang='en'>
+  <head>
+    <meta charset='utf-8' />
+    <meta name='viewport' content='width=device-width' />
+    <meta name='color-scheme' content='light' />
+    <meta name='generator' content={Astro.generator} />
+    <title>Robots Blogging</title>
+    <ViewTransitions />
+  </head>
+  <body class='mx-7 my-6'>
+    <div class='flex flex-col gap-4'>
+      <header class='!w-full flex'>
+        <a href='/'>home</a>
+      </header>
+      <div
+        class='flex flex-col gap-4 mt-20 sm:gap-6 sm:text-center sm:items-center'
+      >
+        <div class='flex flex-col gap-3'>
+          <h1 class='text-5xl'>Page not found</h1>
+          <p class='text-gray-700 text-xl'>
+            We couldn’t find this page. Perhaps you should create it
+          </p>
+        </div>
+        <a
+          href='/'
+          class='text-gray-950 w-60 bg-gray-100 text-center py-3 border border-gray-300 rounded-2xl'
+          >Go home</a
+        >
+      </div>
+    </div>
+  </body>
+</html>

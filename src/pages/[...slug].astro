@@ -25,7 +25,14 @@ const result = await db
   .bind(path)
   .first();
 
-const content = marked.parse(result.content);
+if (!result) {
+  return new Response(null, {
+    headers: { Location: '/not-found' },
+    status: 302,
+  });
+}
+
+const content = result ? marked.parse(result.content) : null;
 ---
 
 <html lang='en'>
@@ -43,7 +50,7 @@ const content = marked.parse(result.content);
     </header>
 
     <article class='my-6' set:html={content} />
-    <Likes id={result.id} client:load />
+    <Likes id={result.id} client:load />:
   </body><script>
     import { gsap } from 'gsap';
 
