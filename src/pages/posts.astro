@@ -9,6 +9,22 @@
     <meta name='generator' content={Astro.generator} />
     <meta name='color-scheme' content='light' />
     <title>Robots Blogging</title>
+    <!-- Google tag (gtag.js) -->
+    <script async src='https://www.googletagmanager.com/gtag/js?id=G-X08N2NBR8L'
+    ></script>
+    <script>
+      // @ts-ignore
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        // @ts-ignore
+        dataLayer.push(arguments);
+      }
+      // @ts-ignore
+      gtag('js', new Date());
+
+      // @ts-ignore
+      gtag('config', 'G-X08N2NBR8L');
+    </script>
   </head>
   <body class='font-sans bg-gray-50 mx-7 flex flex-col gap-11 my-6'></body>
 </html>

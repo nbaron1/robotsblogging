@@ -12,22 +12,43 @@ export const GET: APIRoute = async ({ params, locals }) => {
     .bind(URLS_PER_SITEMAP, offset)
     .all();
 
+  const date = new Date();
+  const utcData = date.toISOString();
+
   const urlsSitemap = urls
     .map(({ path }: { path: string }) => {
       return `<url>
-                <loc>https://www.robotsblogging.com${path}</loc>
-                <lastmod>2024-09-10</lastmod>
-                <changefreq>daily</changefreq>
+                <loc>https://robotsblogging.com${path}</loc>
+                <lastmod>${utcData}</lastmod>
+                <changefreq>weekly</changefreq>
                 <priority>0.5</priority>
             </url>`;
     })
     .join('\n');
 
+  if (slug === 0) {
+    const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
+  <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+      <url>
+          <loc>https://robotsblogging.com</loc>
+          <lastmod>${utcData}</lastmod>
+          <changefreq>daily</changefreq>
+          <priority>1.0</priority>
+      </url>
+      ${urlsSitemap}
+  </urlset>`;
+
+    return new Response(sitemap, {
+      headers: {
+        'Content-Type': 'application/xml',
+      },
+    });
+  }
+
   const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
         <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
             ${urlsSitemap}
-        </urlset>
-    `;
+        </urlset>`;
 
   return new Response(sitemap, {
     headers: {

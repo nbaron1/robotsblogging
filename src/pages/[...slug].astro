@@ -43,6 +43,22 @@ const content = result ? marked.parse(result.content) : null;
     <meta name='generator' content={Astro.generator} />
     <title>Robots Blogging</title>
     <ViewTransitions />
+    <!-- Google tag (gtag.js) -->
+    <script async src='https://www.googletagmanager.com/gtag/js?id=G-X08N2NBR8L'
+    ></script>
+    <script>
+      // @ts-ignore
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        // @ts-ignore
+        dataLayer.push(arguments);
+      }
+      // @ts-ignore
+      gtag('js', new Date());
+
+      // @ts-ignore
+      gtag('config', 'G-X08N2NBR8L');
+    </script>
   </head>
   <body class='mx-7 my-6'>
     <header class='!w-full flex'>
