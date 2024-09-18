@@ -46,7 +46,10 @@ export function Form({ siteKey }: { siteKey: string }) {
 
   const turnstileRef = useRef<TurnstileInstance>(null);
 
-  const [isGeneratingContent, setIsGeneratingContent] = useState(false);
+  const [generatingContentState, setGeneratingContentState] = useState<
+    'initial' | 'loading' | 'error'
+  >('initial');
+
   const loadingDataRef = useRef<null | {
     slug: string;
     topic: string;
@@ -79,37 +82,22 @@ export function Form({ siteKey }: { siteKey: string }) {
     length: string;
     token: string;
   }) => {
-    try {
-      console.log('Generating post');
-      const response = await fetch('/api/v1/pages', {
-        body: JSON.stringify({ slug, topic, length, token }),
-        method: 'POST',
-      });
-      console.log('is after response', response);
+    const response = await fetch('/api/v1/pages', {
+      body: JSON.stringify({ slug, topic, length, token }),
+      method: 'POST',
+    });
 
-      if (!response.ok) {
-        throw new Error('Failed to create page');
-      }
-
-      const data = await response.json();
-
-      if (!data.success) {
-        throw new Error('Failed to create page');
-      }
-
-      return data;
-    } catch (error) {
-      console.log('error posting page', error);
-      const oneSecond = new Promise<void>((resolve) => {
-        setTimeout(() => {
-          resolve();
-        }, 1000);
-      });
-
-      await oneSecond;
-
-      return postPage({ length, slug, token, topic });
+    if (!response.ok) {
+      throw new Error('Failed to create page');
     }
+
+    const data = await response.json();
+
+    if (!data.success) {
+      throw new Error('Failed to create page');
+    }
+
+    return data;
   };
 
   const handleGenerateNewTopicIdea: React.MouseEventHandler<
@@ -157,25 +145,27 @@ export function Form({ siteKey }: { siteKey: string }) {
       const slugWithSlash = `/${slug}`;
       turnstileRef.current?.reset();
 
-      setIsGeneratingContent(true);
+      setGeneratingContentState('loading');
 
-      postPage({ length, slug: slugWithSlash, token, topic }).then(
-        (response) => {
+      postPage({ length, slug: slugWithSlash, token, topic })
+        .then((response) => {
           const {
             data: { slug },
           } = response;
 
           window.location.href = slug;
-        }
-      );
+        })
+        .catch(() => {
+          setGeneratingContentState('error');
+        });
     },
-    [setIsGeneratingContent, slug, topic, length]
+    [setGeneratingContentState, slug, topic, length]
   );
 
   const handleOpenChange = (open: boolean) => {
     console.log({ open });
     if (!open) {
-      setIsGeneratingContent(false);
+      setGeneratingContentState('initial');
     }
   };
 
@@ -190,7 +180,7 @@ export function Form({ siteKey }: { siteKey: string }) {
     <>
       <GeneratingContentDialog
         onOpenChange={handleOpenChange}
-        open={isGeneratingContent}
+        state={generatingContentState}
       />
       <div className='w-full max-w-[500px] mx-auto'>
         <div className='flex flex-col gap-4'>

@@ -41,17 +41,33 @@ function CloseIcon() {
   );
 }
 
+const getDialogDescription = (state: 'initial' | 'loading' | 'error') => {
+  switch (state) {
+    case 'initial': {
+      return null;
+    }
+    case 'error': {
+      return <p className='text-[#ef4444]'>Something went wrong</p>;
+    }
+    case 'loading': {
+      return <p>Making the perfect post...</p>;
+    }
+  }
+};
+
 export function GeneratingContentDialog({
-  open,
+  state,
   onOpenChange,
 }: {
-  open: boolean;
+  state: 'initial' | 'loading' | 'error';
   onOpenChange: Dialog.DialogProps['onOpenChange'];
 }) {
   const textRef = useRef<HTMLParagraphElement>(null);
 
+  const description = getDialogDescription(state);
+
   return (
-    <Dialog.Root open={open} onOpenChange={onOpenChange}>
+    <Dialog.Root open={state !== 'initial'} onOpenChange={onOpenChange}>
       <Dialog.Portal>
         <Dialog.Overlay className='z-20 fixed top-0 left-0 right-0 bottom-0 bg-black opacity-20' />
         <Dialog.Content className='outline-0 justify-between gap-6 sm:w-[375px] sm:-translate-x-1/2 sm:left-1/2 sm:right-auto items-center fade-in-dialog z-30 flex flex-col bg-gray-50 fixed top-1/2 left-5 right-5 -translate-y-1/2 border border-gray-300 shadow-sm rounded-3xl px-6 py-12'>
@@ -69,8 +85,7 @@ export function GeneratingContentDialog({
               ref={textRef}
               className='text-lg h-8 text-gray-800 text-center font-light'
             >
-              {/* TODO: Replace text */}
-              Making the perfect post...
+              {description}
             </Dialog.Description>
           </div>
           <p className='text-gray-800 text-center font-light text-sm'>
