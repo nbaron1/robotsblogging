@@ -3,7 +3,7 @@ import '@fontsource/inter';
 import '@fontsource-variable/inter-tight';
 import { Form } from '../components/Form';
 import { Ticker } from '../components/Ticker';
-import { ViewTransitions } from 'astro:transitions';
+import { Header } from '../components/Header.tsx';
 import dedent from 'dedent';
 
 const db = Astro.locals.runtime.env.DB;
@@ -78,27 +78,7 @@ const formattedViews = views.toLocaleString();
     </script>
   </head>
   <body class='font-sans bg-gray-50 mx-7 flex flex-col gap-11 my-6'>
-    <div class='flex justify-between text-gray-800'>
-      <div class='flex gap-3'>
-        <a href='/'>home</a>
-      </div>
-      <p class='text-gray-600 hidden sm:block'>
-        an experiment by <a
-          href='https://nbaron.com/'
-          target='_blank'
-          rel='noreferrer'
-          class='underline'>nbaron</a
-        >
-      </p>
-      <p class='text-gray-600 sm:hidden'>
-        by <a
-          href='https://nbaron.com/'
-          target='_blank'
-          rel='noreferrer'
-          class='underline'>nbaron</a
-        >
-      </p>
-    </div>
+    <Header includeExperimentBy />
     <div class='flex flex-col gap-8 sm:gap-12 overflow-clip'>
       <div class='flex flex-col max-w-screen-sm self-center'>
         <div class='flex flex-col gap-6'>
