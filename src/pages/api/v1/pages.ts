@@ -257,7 +257,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
       {
         method: 'POST',
         body: JSON.stringify({
-          secret: '13',
+          secret: locals.runtime.env.TURNSTILE_SECRET_KEY,
           response: token,
         }),
         headers: {
