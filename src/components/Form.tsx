@@ -5,6 +5,7 @@ import {
   useRef,
   useState,
   type HTMLAttributes,
+  type HTMLInputTypeAttribute,
 } from 'react';
 import { Turnstile, type TurnstileInstance } from '@marsidev/react-turnstile';
 import { GeneratingContentDialog } from './GeneratingContentDialog';
@@ -42,6 +43,8 @@ export function Form({ siteKey }: { siteKey: string }) {
   const [topic, setTopic] = useState('');
   const [slug, setSlug] = useState('');
 
+  const hasEditedSlug = useRef(false);
+
   const turnstileRef = useRef<TurnstileInstance>(null);
 
   const [isGeneratingContent, setIsGeneratingContent] = useState(false);
@@ -58,8 +61,13 @@ export function Form({ siteKey }: { siteKey: string }) {
   };
 
   useEffect(() => {
-    console.log('loaded');
-  }, []);
+    if (hasEditedSlug.current) return;
+
+    const slugFromTopic = topic.toLocaleLowerCase();
+
+    const slugWithoutSpaces = slugFromTopic.replaceAll(' ', '-');
+    setSlug(slugWithoutSpaces);
+  }, [topic]);
 
   const postPage = async ({
     length,
@@ -83,9 +91,9 @@ export function Form({ siteKey }: { siteKey: string }) {
       if (!response.ok) {
         throw new Error('Failed to create page');
       }
-      console.log;
+
       const data = await response.json();
-      console.log({ data });
+
       if (!data.success) {
         throw new Error('Failed to create page');
       }
@@ -172,6 +180,13 @@ export function Form({ siteKey }: { siteKey: string }) {
     }
   };
 
+  const handleChangeSlug: React.ChangeEventHandler<HTMLInputElement> = (
+    event
+  ) => {
+    hasEditedSlug.current = true;
+    setSlug(event.target.value);
+  };
+
   return (
     <>
       <GeneratingContentDialog
@@ -213,7 +228,7 @@ export function Form({ siteKey }: { siteKey: string }) {
                 name='slug'
                 placeholder='Write anything here'
                 value={slug}
-                onChange={(event) => setSlug(event.target.value)}
+                onChange={handleChangeSlug}
               />
               <p className='absolute left-6 top-1/2 -translate-y-1/2 text-gray-300'>
                 /
