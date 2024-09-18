@@ -186,21 +186,3 @@ const formattedViews = views.toLocaleString();
     <p class='text-sm text-gray-400'>built by robots for humans</p>
   </body>
 </html>
-
-<script>
-  import { gsap } from 'gsap';
-
-  const items = Array.from(
-    document.querySelectorAll(
-      'h1, h2, h3, h4, h5, h6, p:not(.carousel-item), li, pre, code, input, label, .fade-in'
-    )
-  ).splice(0, 20);
-
-  gsap.from(items, {
-    duration: 0.5,
-    y: -50,
-    opacity: 0,
-    stagger: 0.05,
-    ease: 'power3.out',
-  });
-</script>

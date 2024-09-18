@@ -251,6 +251,31 @@ export const POST: APIRoute = async ({ request, locals }) => {
         }
       );
     }
+
+    const verifyResponse = await fetch(
+      'https://challenges.cloudflare.com/turnstile/v0/siteverify',
+      {
+        method: 'POST',
+        body: JSON.stringify({
+          secret: '13',
+          response: token,
+        }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+
+    if (!verifyResponse.ok) {
+      return new Response(null, { status: 403 });
+    }
+
+    const isVerifiedData = await verifyResponse.json();
+
+    if (!isVerifiedData.success) {
+      return new Response(null, { status: 403 });
+    }
+
     const db = await locals.runtime.env.DB;
 
     const uniqueSlug = await generateUniqueSlug(db, slug, null);
