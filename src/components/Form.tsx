@@ -107,7 +107,6 @@ export function Form({ siteKey }: { siteKey: string }) {
       event.preventDefault();
 
       const topicIdea = await getTopicIdea();
-      console.log({ topicIdea });
 
       setTopic(topicIdea);
 
@@ -163,7 +162,6 @@ export function Form({ siteKey }: { siteKey: string }) {
   );
 
   const handleOpenChange = (open: boolean) => {
-    console.log({ open });
     if (!open) {
       setGeneratingContentState('initial');
     }

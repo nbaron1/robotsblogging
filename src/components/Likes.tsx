@@ -107,7 +107,6 @@ export function Likes({ id }: { id: string }) {
   };
 
   useEffect(() => {
-    console.log('is here!');
     getLikes().then((result) => {
       setLikes(result.data.likes);
       setIsLiked(result.data.liked);

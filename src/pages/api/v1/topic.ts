@@ -38,8 +38,6 @@ export const GET: APIRoute = async ({ locals }) => {
       }
     );
   } catch (error) {
-    console.log(error);
-
     // todo: handle logging
     return new Response('Something went wrong', { status: 500 });
   }

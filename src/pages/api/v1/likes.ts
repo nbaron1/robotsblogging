@@ -88,8 +88,6 @@ export const POST: APIRoute = async ({ request, locals, cookies }) => {
         .bind(id)
         .first();
 
-      console.log({ likes });
-
       return new Response(
         JSON.stringify({
           data: {
@@ -130,9 +128,6 @@ export const POST: APIRoute = async ({ request, locals, cookies }) => {
       }
     );
   } catch (error) {
-    // todo: add logging
-    console.log(error);
-
     return new Response(
       JSON.stringify({ success: false, error: 'Something went wrong' }),
       { status: 500 }

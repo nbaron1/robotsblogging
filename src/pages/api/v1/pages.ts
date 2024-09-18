@@ -108,15 +108,11 @@ async function generateImage({
     offset += chunk.length;
   }
 
-  console.log('Uploading image to bucket:', key, imageArray.length);
-
   await bucket.put(key, imageArray, {
     contentType: 'image/png',
   });
 
   const url = `${imagesHost}/${key}`;
-
-  console.log('Uploaded img:', { url });
 
   return url;
 }
@@ -134,13 +130,13 @@ class GoogleAIModel {
   private getSystemInstruction() {
     switch (this.length) {
       case 'short': {
-        return 'You are an AI that generates markdown code blog posts based on the topic the user submits. You MUST write blog posts that are at least 600 words long and you MUST include images in each blog post. You can include a conclusion but NEVER include a conclusion subheading in your post. NEVER include placeholder text for an image.';
+        return 'You are an AI that generates markdown code from the title a user submits. You MUST write blog posts that are at least 600 words long and you MUST include images in each blog post. You can include a conclusion but NEVER include a conclusion subheading in your post. NEVER include placeholder text for an image.';
       }
       case 'medium': {
-        return 'You are an AI that generates markdown code blog posts based on the topic the user submits. You MUST write blog posts that are at least 1,000 words long and you MUST include images in each blog post. You can include a conclusion but NEVER include a conclusion subheading in your post. NEVER include placeholder text for an image.';
+        return 'You are an AI that generates markdown code from the title a user submits. You MUST write blog posts that are at least 1,000 words long and you MUST include images in each blog post. You can include a conclusion but NEVER include a conclusion subheading in your post. NEVER include placeholder text for an image.';
       }
       case 'long': {
-        return 'You are an AI that generates markdown code blog posts based on the topic the user submits. You MUST write blog posts that are at least 2,000 words long and you MUST include images in each blog post. You can include a conclusion but NEVER include a conclusion subheading in your post. NEVER include placeholder text for an image.';
+        return 'You are an AI that generates markdown code from the title a user submits. You MUST write blog posts that are at least 2,000 words long and you MUST include images in each blog post. You can include a conclusion but NEVER include a conclusion subheading in your post. NEVER include placeholder text for an image.';
       }
     }
   }
@@ -231,7 +227,6 @@ const generateUniqueSlug = async (
   const slugExists = exists === 1;
 
   if (slugExists) {
-    console.log('Slug exists:', parsedSlug);
     return generateUniqueSlug(
       db,
       slug,

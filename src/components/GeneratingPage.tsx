@@ -100,8 +100,6 @@ export function GeneratingPage() {
       }
 
       const data = await result.json();
-
-      console.log({ data });
     } catch (error) {
       const oneSecond = new Promise<void>((resolve) => {
         setTimeout(() => {
@@ -141,19 +139,15 @@ export function GeneratingPage() {
       `/api/v1/pages?slug=${encodeURIComponent(slug)}&topic=${encodeURIComponent(topic)}&length=${encodeURIComponent(length)}&token=${encodeURIComponent(token)}`
     );
 
-    console.log('Event source created');
-
     eventSource.onmessage = (event) => {
       try {
         const data: MessagePayload = JSON.parse(event.data);
 
         if (data.type === 'final') {
-          console.log('Path', data.path);
           window.location.href = data.path;
           return;
         }
 
-        console.log({ message: data.message });
         setMessages((messages) => {
           const index = data.step - 1;
 
@@ -166,8 +160,6 @@ export function GeneratingPage() {
 
           return newMessages;
         });
-
-        // console.log('MESSAGE', event.data);
       } catch (error) {}
     };
 
