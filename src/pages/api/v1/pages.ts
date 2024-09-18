@@ -12,6 +12,32 @@ const getCloudflareAIStream = async (
   });
 };
 
+const checkIfContentIsFlagged = async (text: string, apiKey: string) => {
+  try {
+    const response = await fetch('https://api.openai.com/v1/moderations', {
+      method: 'POST',
+      body: JSON.stringify({
+        input: text,
+      }),
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${apiKey}`,
+      },
+    });
+
+    if (!response.ok) {
+      return true;
+    }
+
+    const titleModerationData = await response.json();
+    const isFlagged = titleModerationData.results[0].flagged;
+
+    return isFlagged;
+  } catch (error) {
+    return true;
+  }
+};
+
 // Add fallback models incase we hit a rate limit
 async function getImageStream({
   AI,
@@ -274,6 +300,25 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
     if (!isVerifiedData.success) {
       return new Response(null, { status: 403 });
+    }
+
+    const openAIKey = locals.runtime.env.OPENAI_API_KEY;
+
+    const [isTopicFlagged, isSlugFlagged] = await Promise.all([
+      checkIfContentIsFlagged(topic, openAIKey),
+      checkIfContentIsFlagged(slug, openAIKey),
+    ]);
+
+    if (isTopicFlagged || isSlugFlagged) {
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: 'Unauthorized',
+        }),
+        {
+          status: 401,
+        }
+      );
     }
 
     const db = await locals.runtime.env.DB;

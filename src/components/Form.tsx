@@ -5,7 +5,6 @@ import {
   useRef,
   useState,
   type HTMLAttributes,
-  type HTMLInputTypeAttribute,
 } from 'react';
 import { Turnstile, type TurnstileInstance } from '@marsidev/react-turnstile';
 import { GeneratingContentDialog } from './GeneratingContentDialog';
