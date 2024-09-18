@@ -124,11 +124,10 @@ export function Form({ siteKey }: { siteKey: string }) {
     }
   };
 
-  const handleSubmit: HTMLAttributes<HTMLFormElement>['onClick'] = async (
+  const handleSubmit: HTMLAttributes<HTMLButtonElement>['onClick'] = async (
     event
   ) => {
     try {
-      console.log('submit', { slug, topic, length });
       event.preventDefault();
 
       if (!turnstileRef.current) {
