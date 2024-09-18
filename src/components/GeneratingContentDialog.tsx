@@ -1,10 +1,6 @@
 import * as Dialog from '@radix-ui/react-dialog';
 import { useRef } from 'react';
-import { gsap } from 'gsap';
-import { TextPlugin } from 'gsap/TextPlugin';
 import './generate-page-dialog.css';
-
-gsap.registerPlugin(TextPlugin);
 
 function LoadingIcon() {
   return (

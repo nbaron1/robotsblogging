@@ -49,7 +49,7 @@ const formattedViews = views.toLocaleString();
     <meta name='generator' content={Astro.generator} />
     <meta name='color-scheme' content='light' />
     <title>Robots Blogging</title>
-    <ViewTransitions />
+    <!-- <ViewTransitions /> -->
   </head>
   <body class='font-sans bg-gray-50 mx-7 flex flex-col gap-11 my-6'>
     <div class='flex justify-between text-gray-800'>
@@ -100,7 +100,7 @@ const formattedViews = views.toLocaleString();
                 What happens when AI creates higher quality content than humans?
               </p>
             </div>
-            <Form client:only='react' siteKey={siteKey} />
+            <Form client:load siteKey={siteKey} />
           </div>
         </div>
       </div>
