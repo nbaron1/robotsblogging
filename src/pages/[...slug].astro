@@ -311,11 +311,18 @@ const content = result ? marked.parse(result.content) : null;
         margin-left: 2rem;
       }
 
+      ul {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
       /* Counteract the specificity of the gross *:not() chain. */
 
       /*  === End gross hack */
 
-      p {
+      p,
+      li {
         color: #0c0a09;
         height: auto;
         line-height: 1.45;
