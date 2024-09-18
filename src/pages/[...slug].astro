@@ -18,7 +18,7 @@ const db = Astro.locals.runtime.env.DB;
 // TOOD: Check if the page exists. If not, return 404 page
 await db
   .prepare('UPDATE page SET views = views + 1 WHERE path = ?')
-  .bind('/')
+  .bind(path)
   .run();
 
 const result = await db
