@@ -6,6 +6,7 @@ import '@fontsource/inter';
 import { ViewTransitions } from 'astro:transitions';
 import { Likes } from '../components/Likes';
 import { Header } from '../components/Header';
+import sanitizeHtml from 'sanitize-html';
 
 const path = Astro.url.pathname;
 
@@ -33,7 +34,55 @@ if (!result) {
   });
 }
 
-const content = result ? marked.parse(result.content) : null;
+const markdownSanitizeOptions = {
+  allowedTags: [
+    'h1',
+    'h2',
+    'h3',
+    'h4',
+    'h5',
+    'h6',
+    'blockquote',
+    'p',
+    'a',
+    'ul',
+    'ol',
+    'nl',
+    'li',
+    'b',
+    'i',
+    'strong',
+    'em',
+    'strike',
+    'code',
+    'hr',
+    'br',
+    'div',
+    'table',
+    'thead',
+    'caption',
+    'tbody',
+    'tr',
+    'th',
+    'td',
+    'pre',
+    'img',
+  ],
+  allowedAttributes: {
+    a: ['href', 'name', 'target'],
+    img: ['src', 'alt', 'title'],
+    '*': ['class', 'id'],
+  },
+  selfClosing: ['img', 'br', 'hr'],
+  allowedSchemes: ['https'],
+  allowedSchemesByTag: {},
+  allowProtocolRelative: true,
+  enforceHtmlBoundary: false,
+};
+
+const content = result
+  ? marked.parse(sanitizeHtml(result.content, markdownSanitizeOptions))
+  : null;
 ---
 
 <html lang='en'>
