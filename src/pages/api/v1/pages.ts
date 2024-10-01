@@ -253,6 +253,24 @@ export const POST: APIRoute = async ({ request, locals }) => {
       });
     }
 
+    const db = await locals.runtime.env.DB;
+
+    const { results } = await db
+      .prepare('SELECT COUNT(*) as count FROM page')
+      .run();
+
+    const count = results[0].count;
+
+    // if more than 5,000 pages made we should stop so we don't go bankrupt from someone attacking us
+    if (count >= 5000) {
+      return new Response(
+        JSON.stringify({ success: false, error: 'Too many pages' }),
+        {
+          status: 400,
+        }
+      );
+    }
+
     if (
       typeof slug !== 'string' ||
       typeof topic !== 'string' ||
@@ -315,8 +333,6 @@ export const POST: APIRoute = async ({ request, locals }) => {
         }
       );
     }
-
-    const db = await locals.runtime.env.DB;
 
     const uniqueSlug = await generateUniqueSlug(db, slug, null);
 
