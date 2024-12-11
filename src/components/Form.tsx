@@ -187,12 +187,12 @@ export function Form({ siteKey }: { siteKey: string }) {
               <label htmlFor='topic' className='text-gray-700'>
                 Topic
               </label>
-              <button
+              {/* <button
                 onClick={handleGenerateNewTopicIdea}
                 className='text-left font-light text-gray-700'
               >
                 <span className='fade-in'>Suggest a topic</span>
-              </button>
+              </button> */}
             </div>
             <input
               id='topic'
